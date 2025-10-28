@@ -1,0 +1,78 @@
+body {
+    font-family: 'Arial', sans-serif;
+    flex-direction: column;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #222;
+    color: #eee;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .container {
+    background-color: #333;
+    padding: 40px 60px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    border: 1px solid #0f0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, rgba(0,255,0,0.1) 0%, rgba(0,255,0,0) 50%, rgba(0,255,0,0.1) 100%);
+    animation: scanline 3s linear infinite;
+    opacity: 0.3;
+  }
+
+  @keyframes scanline {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  h1 {
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+    position: relative;
+    z-index: 1;
+  }
+
+  p {
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    margin: 0;
+    font-size: 2.5em;
+    position: relative;
+    z-index: 1;
+  }
+
+  #countdown-unix {
+    color: #0f0;
+    text-shadow: 0 0 10px #0f0;
+    margin-top: 30px;
+    font-size: 1.8em;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 2px;
+  }
+
+  #countdown {
+    color: #0f0;
+    text-shadow: 0 0 8px #0f0;
+    margin-top: 15px;
+    font-size: 1.2em;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 1px;
+  }
