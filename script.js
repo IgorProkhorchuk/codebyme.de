@@ -1,24 +1,34 @@
- const countDownDate = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
+document.addEventListener("DOMContentLoaded", function () {
+    const countdownElement = document.getElementById("countdown");
+    if (!countdownElement) {
+        return;
+    }
+    const openingDate = new Date("2025-11-25T00:00:00");
+    let intervalId;
+    const updateCountdown = () => {
+        const now = Date.now();
+        const distance = openingDate - now;
 
-const x = setInterval(function() {
+        if (distance <= 0) {
+            countdownElement.textContent = "Welcome!";
+            clearInterval(intervalId);
+            return;
+        }
 
-const now = new Date().getTime();
+        const dayInMs = 1000 * 60 * 60 * 24;
+        const hourInMs = 1000 * 60 * 60;
+        const minuteInMs = 1000 * 60;
 
-const distance = countDownDate - now;
+        const days = Math.floor(distance / dayInMs);
+        const hours = Math.floor((distance % dayInMs) / hourInMs);
+        const minutes = Math.floor((distance % hourInMs) / minuteInMs);
+        const seconds = Math.floor((distance % minuteInMs) / 1000);
 
-const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const pad = (value) => String(value).padStart(2, "0");
 
-document.getElementById("countdown").innerHTML = `(${days}d ${hours}h ${minutes}m ${seconds}s)`;
+        countdownElement.textContent = `${days} days ${pad(hours)} hours ${pad(minutes)} minutes ${pad(seconds)} seconds`;
+    };
 
-const remainingSeconds = Math.floor(distance / 1000);
-document.getElementById("countdown-unix").innerHTML = `${remainingSeconds} seconds remaining`;
-
-if (distance < 0) {
-    clearInterval(x);
-    document.getElementById("countdown").innerHTML = "SYSTEM ONLINE";
-    document.getElementById("countdown-unix").innerHTML = "0 seconds remaining";
-}
-  }, 1000);
+    intervalId = setInterval(updateCountdown, 1000);
+    updateCountdown();
+});
