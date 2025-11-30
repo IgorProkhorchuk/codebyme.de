@@ -62,8 +62,8 @@ deploy-to-server:
   script:
     # 1. Substitute variables in docker-compose.prod.yml (populates image names)
     # We export the CI vars so envsubst can use them
-    - export CI_PROJECT_NAMESPACE=$CI_PROJECT_NAMESPACE
-    - export CI_PROJECT_NAME=$CI_PROJECT_NAME
+    - export CI_PROJECT_NAMESPACE=$(echo "$CI_PROJECT_NAMESPACE" | tr '[:upper:]' '[:lower:]')
+    - export CI_PROJECT_NAME=$(echo "$CI_PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
     - envsubst < docker-compose.prod.yml > docker-compose.final.yml
     
     # 2. Transfer the compose file to the server
