@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./backend
+    container_name: codebyme_backend
+    restart: unless-stopped
+    environment:
+      - SERVER_PORT=8083:8080
+    networks:
+      - codebyme_net
+
+  frontend:
+    build: ./frontend
+    container_name: codebyme_frontend
+    restart: unless-stopped
+    environment:
+      # This tells SvelteKit's Node adapter where the backend is (Docker DNS name)
+      - ORIGIN=https://codebyme.de
+    ports:
+      - "127.0.0.1:8082:3000" # Host Port 8082 -> Container Port 3000
+    depends_on:
+      - backend
+    networks:
+      - codebyme_net
+
+networks:
+  codebyme_net:
+    driver: bridge

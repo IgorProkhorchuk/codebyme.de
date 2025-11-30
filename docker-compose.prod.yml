@@ -1,0 +1,38 @@
+services:
+  backend:
+    # This image name matches what GitLab CI builds
+    image: registry.gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/backend:latest
+    container_name: codebyme_backend
+    restart: always
+    environment:
+      - SERVER_PORT=8080
+    # Map internal 8080 to host 8083 so Apache can proxy API requests to it
+    ports:
+      - "127.0.0.1:8083:8080"
+    networks:
+      - codebyme_internal_net
+
+  frontend:
+    image: registry.gitlab.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/frontend:latest
+    container_name: codebyme_frontend
+    restart: always
+    environment:
+      # Public URL of your site (for SvelteKit)
+      - ORIGIN=https://codebyme.de
+      # Internal URL for Server-Side Rendering (SSR) to talk to backend
+      # Uses the docker service name 'backend'
+      - PUBLIC_API_URL=http://backend:8080/api
+      # Configuring node adapter to trust the proxy headers from Apache
+      - PROTOCOL_HEADER=x-forwarded-proto
+      - HOST_HEADER=x-forwarded-host
+    # Map internal 3000 to host 8082 so Apache can proxy web traffic to it
+    ports:
+      - "127.0.0.1:8082:3000"
+    depends_on:
+      - backend
+    networks:
+      - codebyme_internal_net
+
+networks:
+  codebyme_internal_net:
+    driver: bridge

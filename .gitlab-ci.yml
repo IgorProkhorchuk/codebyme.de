@@ -1,0 +1,87 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  # Use Docker-in-Docker for building images
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+# --- Stage 1: Tests ---
+# Run backend tests
+test-backend:
+  stage: test
+  image: gradle:jdk25-jammy
+  script:
+    - cd backend
+    - ./gradlew test --no-daemon
+
+# Run frontend checks (lint/types)
+test-frontend:
+  stage: test
+  image: node:20-alpine
+  script:
+    - cd frontend
+    - npm ci
+    - npm run check # Runs svelte-check (TypeScript validation)
+    # - npm run test:unit (Uncomment when add unit tests)
+
+# --- Stage 2: Build & Push Docker Images ---
+# Only runs if tests pass
+build-images:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    # Build Backend
+    - docker build -t $CI_REGISTRY_IMAGE/backend:latest ./backend
+    - docker push $CI_REGISTRY_IMAGE/backend:latest
+    
+    # Build Frontend
+    - docker build -t $CI_REGISTRY_IMAGE/frontend:latest ./frontend
+    - docker push $CI_REGISTRY_IMAGE/frontend:latest
+  only:
+    - main
+
+# --- Stage 3: Deploy to Server ---
+deploy-to-server:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    # Install SSH client
+    - apk add --no-cache openssh-client gettext
+    # Setup SSH key
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+  script:
+    # 1. Substitute variables in docker-compose.prod.yml (populates image names)
+    # We export the CI vars so envsubst can use them
+    - export CI_PROJECT_NAMESPACE=$CI_PROJECT_NAMESPACE
+    - export CI_PROJECT_NAME=$CI_PROJECT_NAME
+    - envsubst < docker-compose.prod.yml > docker-compose.final.yml
+    
+    # 2. Transfer the compose file to the server
+    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/docker-compose.yml
+    
+    # 3. SSH in and update containers
+    - ssh $SERVER_USER@$SERVER_IP "
+        echo 'Logging into GitLab Registry...';
+        docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY;
+        
+        echo 'Pulling new images...';
+        docker compose pull;
+        
+        echo 'Restarting services...';
+        docker compose up -d --remove-orphans;
+        
+        echo 'Pruning old images...';
+        docker image prune -f;
+      "
+  only:
+    - main
