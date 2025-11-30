@@ -1,5 +1,5 @@
 # Stage 1: Build 
-FROM gradle:jdk25-jammy AS builder
+FROM gradle:dk25-corretto AS builder
 WORKDIR /app
 
 # caching layer
