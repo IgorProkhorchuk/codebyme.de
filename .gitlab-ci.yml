@@ -12,7 +12,7 @@ variables:
 # Run backend tests
 test-backend:
   stage: test
-  image: gradle:jdk25-jammy
+  image: gradle:jdk25-corretto
   script:
     - cd backend
     - ./gradlew test --no-daemon

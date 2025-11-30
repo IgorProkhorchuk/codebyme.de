@@ -1,6 +1,6 @@
 # Stage 1: Build 
 # fixed gradle dk25-corretto image to ensure compatibility with Java 25
-FROM gradle:dk25-corretto AS builder 
+FROM gradle:jdk25-corretto AS builder 
 WORKDIR /app
 
 # caching layer
