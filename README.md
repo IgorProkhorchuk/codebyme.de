@@ -1,93 +1,139 @@
-# codebyme.de
+# CodeByMe.de - Tech Blog
 
-This repository contains the source code for the codebyme.de project. It is a monorepo containing a Java backend and a Svelte frontend.
+A tech blog, Linux tutorials, interactive labs, and PDF generation tools.
 
-## Project Architecture
+## Architecture Overview
 
-The project follows a client-server architecture with a modular backend. The frontend communicates with the backend via a REST API.
+This project uses a **Monorepo** structure to house both the Backend and Frontend, ensuring atomic commits and synchronized deployments.
 
-```ascii
-      +---------------------+
-      |        User         |
-      +---------------------+
-              |
-      +-------v-------+
-      |    Browser    |
-      +---------------+
-              |
-      +-------v-------+
-      |   Frontend    |
-      |  (SvelteKit)  |
-      +-------+-------+
-              |
-              | REST API Call
-              |
-  +-----------v-----------+
-  |  Backend (Spring Boot)|
-  |                       |
-  | +-------------------+ |
-  | |   app (API)       | |
-  | +--------+----------+ |
-  |          |            |
-  | +--------v----------+ |
-  | |   shared (lib)    | |
-  | +-------------------+ |
-  +-----------------------+
+### Tech Stack
+
+| Component | Technology | Version | Description |
+| :--- | :--- | :--- | :--- |
+| **Backend** | **Spring Boot** | 4.0.0 | Core API, Business Logic, Kafka Consumers. |
+| **Language** | **Java** | 25 (LTS) | Using latest language features. |
+| **Build Tool** | **Gradle** | 9.x | Multi-module build (`app` + `shared`). |
+| **Frontend** | **SvelteKit** | 2.0 | SSR, Reactive UI, Linux Terminal simulation. |
+| **Runtime** | **Node.js** | 20 | Runs the SvelteKit Adapter-Node server. |
+| **Database** | **PostgreSQL** | 16 | Relational data persistence. |
+| **Message Broker** | **Apache Kafka** | 3.7 | Real-time event streaming for Linux Labs. |
+
+### Network & Deployment Topology
+
+  * **Reverse Proxy:** Apache HTTP Server (Host) handles SSL termination and routing.
+      * `/api` → Proxies to Spring Boot Backend (`127.0.0.1:8083`).
+      * `/` → Proxies to SvelteKit Frontend (`127.0.0.1:8082`).
+  * **Containerization:** Both applications run in optimized Docker containers on a custom internal bridge network.
+  * **CI/CD:** Automated pipeline via **GitLab CI** deploying to an **AlmaLinux 9.5** server.
+
+-----
+
+## DevOps & CI/CD Pipeline
+
+The project follows a **GitOps** workflow. Code is pushed to GitHub, mirrored to GitLab, and automatically deployed to production.
+
+### The Pipeline Flow
+
+1.  **Merge to main:** after merging to the `main` branch on GitHub.
+2.  **Mirroring:** Code is instantly synced to GitLab.
+3.  **Test Stage:**
+      * Runs JUnit 5 tests for Backend (in `gradle:jdk25` container).
+      * Runs ESLint/Prettier/Check for Frontend (in `node:20-alpine` container).
+4.  **Build Stage:**
+      * Builds Docker images using **Multi-Stage Builds**.
+      * Pushes images to **GitLab Container Registry**.
+5.  **Deploy Stage:**
+      * Connects to Production Server via SSH.
+      * Generates a dynamic `docker-compose.yml` with versioned image tags.
+      * Pulls new images and performs a zero-downtime container replacement.
+
+### Infrastructure Configuration
+
+  * **CI Configuration:** [`codebyme.de/.gitlab-ci.yml`](.gitlab-ci.yml) - Defines the Test -\> Build -\> Deploy stages.
+  * **Production Compose:** [`codebyme.de/docker-compose.prod.yml`](docker-compose.prod.yml) - Service definition for the production environment.
+
+### Docker Configuration
+
+Multi-stage Dockerfiles to ensure lightweight production images (stripping out build tools like Gradle and npm).
+
+  * **Backend Dockerfile:** [`backend/Dockerfile`](backend/Dockerfile) - Builds Spring Boot Fat Jar.
+  * **Frontend Dockerfile:** [`frontend/Dockerfile`](frontend/Dockerfile) - Builds SvelteKit Node Adapter.
+
+-----
+
+## Local Development
+
+### Prerequisites
+
+  * Java 25 SDK
+  * Node.js 24.11+
+  * Gradle 9.1.0
+  * Docker & Docker Compose
+  * PostgreSQL 17.4
+
+## Key Features (Implemented & Planned)
+
+### Implemented
+
+  * **Multi-Module Gradle Build:** Separation of `app` (API) and `shared` (Library) modules.
+  * **Full-Stack Proxying:** Seamless local dev environment without CORS issues.
+  * **Automated Deployment:** Push-to-Deploy pipeline active.
+
+### In Progress
+
+  * **Linux Labs:** Interactive xterm.js terminal connected to Docker containers via WebSockets.
+  * **PDF Generator:** DHL-compliant envelope generation using `@react-pdf` logic ported to Svelte.
+  * **Kafka Integration:** Real-time event streaming for user activity and lab status.
+
+-----
+
+## Feedback
+
+I'd be happy for some feedback about the project structure, tech choices, or any other aspect!
+
+```mermaid
+graph TD
+    %% Nodes
+    User((User))
+    
+    subgraph "Frontend Container (SvelteKit)"
+        UI[Web Interface]
+    end
+
+    subgraph "Backend Modular Monolith (Spring Boot)"
+        Host[":app (Host & Config)"]
+        
+        subgraph "Domain Modules"
+            Blog[":blog"]
+            Pdf[":pdfEnvelopeGeneration"]
+            Tuts[":linuxTutorials"]
+            Labs[":linuxLabs"]
+        end
+        
+        Shared[":shared (Utils/Common)"]
+    end
+    
+    DB[(PostgreSQL)]
+
+
+    %% Relationships
+    User -->|HTTPS| UI
+    UI -->|REST API| Host
+    
+    Host --> Blog
+    Host --> Pdf
+    Host --> Tuts
+    Host --> Labs
+    
+    Blog --> Shared
+    Pdf --> Shared
+    Tuts --> Shared
+    Labs --> Shared
+    
+    Blog -.->|JPA| DB
+    Tuts -.->|JPA| DB
+    
+    %% Style
+    style Host fill:#f9f,stroke:#333,stroke-width:2px
+    style Shared fill:#eee,stroke:#333,stroke-width:2px
 ```
-
-*   **Frontend:** A single-page application (SPA) built with SvelteKit and TypeScript that consumes the backend REST API.
-*   **Backend:** A RESTful API built with Java and Spring Boot. It follows a modular design:
-    *   `app`: The main application module that exposes the REST API.
-    *   `shared`: A shared library module containing common code used by the `app` module.
-*   **Containerization:** The entire application is containerized using Docker, with services defined in `docker-compose.yml`.
-
-## Project Structure
-
-The repository is structured as a monorepo with two main components: `frontend` and `backend`.
-
-Backend uses a modular approach with a shared library module.
-
-```
-/
-├── backend/
-│   ├── app/                # Main Spring Boot application
-│   ├── shared/             # Shared Java library
-│   ├── build.gradle.kts
-│   └── Dockerfile
-├── frontend/
-│   ├── src/
-│   │   ├── lib/
-│   │   └── routes/         # SvelteKit routes
-│   ├── static/
-│   ├── package.json
-│   ├── svelte.config.js
-│   └── Dockerfile
-├── docker-compose.yml
-└── README.md
-```
-
-### Backend
-
-The backend is a Java project built with Gradle.
-
-*   `backend/app`: Contains the main Spring Boot application, including REST controllers and services.
-*   `backend/shared`: A shared library module that can be used by other backend modules.
-*   `build.gradle.kts`: The main Gradle build script for the backend modules.
-
-### Frontend
-
-The frontend is a SvelteKit project.
-
-*   `frontend/src/routes`: Defines the pages and API routes for the SvelteKit application.
-*   `frontend/src/lib`: Contains reusable Svelte components and utility functions.
-*   `frontend/static`: Contains static assets like images and fonts.
-*   `package.json`: Defines the frontend dependencies and scripts.
-*   `svelte.config.js`: The configuration file for the SvelteKit application.
-
-### Containerization
-
-The project uses Docker for containerization.
-
-*   `docker-compose.yml`: Defines the services, networks, and volumes for the local development environment.
-*   `docker-compose.prod.yml`: Defines the services for the production environment.
-*   `Dockerfile`: Each service (`frontend` and `backend`) has its own Dockerfile to build the respective Docker image.
