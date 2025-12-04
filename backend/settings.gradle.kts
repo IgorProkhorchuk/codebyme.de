@@ -8,5 +8,4 @@
 
 rootProject.name = "codebyme.de"
 
-include("app")
-include("shared")
+include("app", "shared", "blog")
