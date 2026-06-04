@@ -99,13 +99,21 @@ deploy-to-server:
     # We export the CI vars so envsubst can use them
     - export CI_PROJECT_NAMESPACE=$(echo "$CI_PROJECT_NAMESPACE" | tr '[:upper:]' '[:lower:]')
     - export CI_PROJECT_NAME=$(echo "$CI_PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
-    - envsubst < docker-compose.prod.yml > docker-compose.final.yml
+    - envsubst '$CI_PROJECT_NAMESPACE $CI_PROJECT_NAME' < docker-compose.prod.yml > docker-compose.final.yml
     
-    # 2. Transfer the compose file to the server
-    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/docker-compose.yml
+    # 2. Generate .env file securely from GitLab CI/CD Variables
+    - echo "DB_NAME=$DB_NAME" >> .env
+    - echo "DB_USER=$DB_USER" >> .env
+    - echo "DB_PASS=$DB_PASS" >> .env
     
-    # 3. SSH in and update containers
+    # 3. Transfer the compose and env files to the server
+    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:/srv/codebyme.de/docker-compose.yml
+    - scp .env $SERVER_USER@$SERVER_IP:/srv/codebyme.de/.env
+    
+    # 4. SSH in and update containers
     - ssh $SERVER_USER@$SERVER_IP "
+        cd /srv/codebyme.de;
+        
         echo 'Logging into GitLab Registry...';
         docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY;
         
