@@ -6,6 +6,13 @@ services:
     restart: always
     environment:
       - SERVER_PORT=8080
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    depends_on:
+      - db
     # Map internal 8080 to host 8083 so Apache can proxy API requests to it
     ports:
       - "127.0.0.1:8083:8080"
@@ -33,6 +40,22 @@ services:
     networks:
       - codebyme_internal_net
 
+  db:
+    image: postgres:16-alpine
+    container_name: codebyme_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - codebyme_db_data:/var/lib/postgresql/data
+    networks:
+      - codebyme_internal_net
+
 networks:
   codebyme_internal_net:
     driver: bridge
+
+volumes:
+  codebyme_db_data:

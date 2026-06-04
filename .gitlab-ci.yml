@@ -1,7 +1,14 @@
 stages:
   - test
   - build
+  - package
   - deploy
+
+.gradle-cache: &gradle-cache
+  key: "gradle-cache"
+  paths:
+    - backend/.gradle/wrapper
+    - backend/.gradle/caches
 
 variables:
   # Use Docker-in-Docker for building images
@@ -13,6 +20,13 @@ variables:
 test-backend:
   stage: test
   image: gradle:jdk25-corretto
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/backend/.gradle"
+  cache:
+    <<: *gradle-cache
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "devel"'
   script:
     - cd backend
     - ./gradlew test --no-daemon
@@ -21,16 +35,37 @@ test-backend:
 test-frontend:
   stage: test
   image: node:20-alpine
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "devel"'
   script:
     - cd frontend
     - npm ci
     - npm run check # Runs svelte-check (TypeScript validation)
     # - npm run test:unit (Uncomment when add unit tests)
 
-# --- Stage 2: Build & Push Docker Images ---
+# --- Stage 2: Build Native JAR ---
+build-backend-jar:
+  stage: build
+  image: gradle:jdk25-corretto
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/backend/.gradle"
+  cache:
+    <<: *gradle-cache
+  script:
+    - cd backend
+    - ./gradlew clean :app:bootJar -x test --no-daemon
+  artifacts:
+    paths:
+      - backend/app/build/libs/*.jar
+    expire_in: 1 hour
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# --- Stage 3: Build & Push Docker Images ---
 # Only runs if tests pass
 build-images:
-  stage: build
+  stage: package
   image: docker:latest
   services:
     - docker:dind
@@ -44,8 +79,8 @@ build-images:
     # Build Frontend
     - docker build -t $CI_REGISTRY_IMAGE/frontend:latest ./frontend
     - docker push $CI_REGISTRY_IMAGE/frontend:latest
-  only:
-    - main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 # --- Stage 3: Deploy to Server ---
 deploy-to-server:
@@ -64,13 +99,23 @@ deploy-to-server:
     # We export the CI vars so envsubst can use them
     - export CI_PROJECT_NAMESPACE=$(echo "$CI_PROJECT_NAMESPACE" | tr '[:upper:]' '[:lower:]')
     - export CI_PROJECT_NAME=$(echo "$CI_PROJECT_NAME" | tr '[:upper:]' '[:lower:]')
-    - envsubst < docker-compose.prod.yml > docker-compose.final.yml
+    - envsubst '$CI_PROJECT_NAMESPACE $CI_PROJECT_NAME' < docker-compose.prod.yml > docker-compose.final.yml
     
-    # 2. Transfer the compose file to the server
-    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:/home/$SERVER_USER/docker-compose.yml
+    # 2. Generate .env file securely from GitLab CI/CD Variables
+    - echo "DB_NAME=$DB_NAME" >> .env
+    - echo "DB_USER=$DB_USER" >> .env
+    - echo "DB_PASS=$DB_PASS" >> .env
     
-    # 3. SSH in and update containers
+    # 3. Transfer the compose and env files to the server (upload to home dir first to avoid SCP/SELinux permission issues)
+    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:~/docker-compose.yml
+    - scp .env $SERVER_USER@$SERVER_IP:~/.env
+    
+    # 4. SSH in, move files to the correct folder, and update containers
     - ssh $SERVER_USER@$SERVER_IP "
+        mv ~/docker-compose.yml /srv/codebyme.de/docker-compose.yml;
+        mv ~/.env /srv/codebyme.de/.env;
+        cd /srv/codebyme.de;
+        
         echo 'Logging into GitLab Registry...';
         docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY;
         
@@ -83,5 +128,5 @@ deploy-to-server:
         echo 'Pruning old images...';
         docker image prune -f;
       "
-  only:
-    - main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
