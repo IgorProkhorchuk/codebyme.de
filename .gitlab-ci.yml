@@ -1,7 +1,14 @@
 stages:
   - test
   - build
+  - package
   - deploy
+
+.gradle-cache: &gradle-cache
+  key: "gradle-cache"
+  paths:
+    - backend/.gradle/wrapper
+    - backend/.gradle/caches
 
 variables:
   # Use Docker-in-Docker for building images
@@ -13,6 +20,10 @@ variables:
 test-backend:
   stage: test
   image: gradle:jdk25-corretto
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/backend/.gradle"
+  cache:
+    <<: *gradle-cache
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
     - if: '$CI_COMMIT_BRANCH == "devel"'
@@ -33,10 +44,28 @@ test-frontend:
     - npm run check # Runs svelte-check (TypeScript validation)
     # - npm run test:unit (Uncomment when add unit tests)
 
-# --- Stage 2: Build & Push Docker Images ---
+# --- Stage 2: Build Native JAR ---
+build-backend-jar:
+  stage: build
+  image: gradle:jdk25-corretto
+  variables:
+    GRADLE_USER_HOME: "$CI_PROJECT_DIR/backend/.gradle"
+  cache:
+    <<: *gradle-cache
+  script:
+    - cd backend
+    - ./gradlew clean :app:bootJar -x test --no-daemon
+  artifacts:
+    paths:
+      - backend/app/build/libs/*.jar
+    expire_in: 1 hour
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# --- Stage 3: Build & Push Docker Images ---
 # Only runs if tests pass
 build-images:
-  stage: build
+  stage: package
   image: docker:latest
   services:
     - docker:dind
