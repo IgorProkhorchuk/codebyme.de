@@ -52,6 +52,18 @@ The project follows a **GitOps** workflow. Code is pushed to GitHub, mirrored to
   * **CI Configuration:** [`codebyme.de/.gitlab-ci.yml`](.gitlab-ci.yml) - Defines the Test -\> Build -\> Deploy stages.
   * **Production Compose:** [`codebyme.de/docker-compose.prod.yml`](docker-compose.prod.yml) - Service definition for the production environment.
 
+### Production Environment Variables
+
+To successfully run the `docker-compose.prod.yml` in production, you must create a `.env` file in the same directory on your server. This file provides the backend and the local PostgreSQL database container with the necessary credentials.
+
+Create a `.env` file with the following contents:
+
+```env
+DB_NAME=codebyme
+DB_USER=codebyme_user
+DB_PASS=your_secure_password
+```
+
 ### Docker Configuration
 
 Multi-stage Dockerfiles to ensure lightweight production images (stripping out build tools like Gradle and npm).
