@@ -21,7 +21,7 @@
 
   <footer>
     <div class="container">
-      <p>&copy; 2025 CodeByMe.de | Engineering & Linux</p>
+      <p>&copy; 2025 CodeByMe.de | Engineering</p>
     </div>
   </footer>
 </div>

@@ -13,11 +13,27 @@ public class BlogService {
     }
 
     public List<BlogPostDto> getAllPosts() {
-        return null;
+        return blogRepository.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
     public BlogPostDto getPostBySlug(String slug) {
-        return null;
+        return blogRepository.findBySlug(slug)
+                .map(this::mapToDto)
+                .orElse(null);
+    }
+
+    private BlogPostDto mapToDto(de.codebyme.blog.model.BlogPost post) {
+        String[] tags = post.getTags() != null ? post.getTags().split(",\\s*") : new String[0];
+        return new BlogPostDto(
+                post.getTitle(),
+                post.getSlug(),
+                post.getContent(),
+                tags,
+                post.getPublishedAt()
+        );
     }
 
 }

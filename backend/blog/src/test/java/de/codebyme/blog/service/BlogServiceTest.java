@@ -49,4 +49,23 @@ class BlogServiceTest {
 
     }
 
+    @Test
+    void shouldReturnPostBySlug() {
+        BlogPost rawPost = new BlogPost(
+                "My Title",
+                "my-slug",
+                "Content",
+                "Java"
+        );
+        when(blogRepository.findBySlug("my-slug")).thenReturn(java.util.Optional.of(rawPost));
+
+        BlogPostDto result = blogService.getPostBySlug("my-slug");
+
+        assertNotNull(result);
+        assertEquals("My Title", result.title());
+        assertEquals("my-slug", result.slug());
+        assertEquals(1, result.tags().length);
+        assertEquals("Java", result.tags()[0]);
+    }
+
 }

@@ -13,6 +13,9 @@ variables:
 test-backend:
   stage: test
   image: gradle:jdk25-corretto
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "devel"'
   script:
     - cd backend
     - ./gradlew test --no-daemon
@@ -21,6 +24,9 @@ test-backend:
 test-frontend:
   stage: test
   image: node:20-alpine
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "devel"'
   script:
     - cd frontend
     - npm ci
@@ -44,8 +50,8 @@ build-images:
     # Build Frontend
     - docker build -t $CI_REGISTRY_IMAGE/frontend:latest ./frontend
     - docker push $CI_REGISTRY_IMAGE/frontend:latest
-  only:
-    - main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
 
 # --- Stage 3: Deploy to Server ---
 deploy-to-server:
@@ -83,5 +89,5 @@ deploy-to-server:
         echo 'Pruning old images...';
         docker image prune -f;
       "
-  only:
-    - main
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

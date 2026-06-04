@@ -4,7 +4,16 @@ services:
     container_name: codebyme_backend
     restart: unless-stopped
     environment:
-      - SERVER_PORT=8083:8080
+      - SERVER_PORT=8080
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-codebyme}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASS=${DB_PASS:-566235}
+    ports:
+      - "127.0.0.1:8083:8080"
+    depends_on:
+      - db
     networks:
       - codebyme_net
 
@@ -22,6 +31,22 @@ services:
     networks:
       - codebyme_net
 
+  db:
+    image: postgres:16-alpine
+    container_name: codebyme_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-codebyme}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-566235}
+    volumes:
+      - codebyme_db_data:/var/lib/postgresql/data
+    networks:
+      - codebyme_net
+
 networks:
   codebyme_net:
     driver: bridge
+
+volumes:
+  codebyme_db_data:
