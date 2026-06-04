@@ -106,12 +106,14 @@ deploy-to-server:
     - echo "DB_USER=$DB_USER" >> .env
     - echo "DB_PASS=$DB_PASS" >> .env
     
-    # 3. Transfer the compose and env files to the server
-    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:/srv/codebyme.de/docker-compose.yml
-    - scp .env $SERVER_USER@$SERVER_IP:/srv/codebyme.de/.env
+    # 3. Transfer the compose and env files to the server (upload to home dir first to avoid SCP/SELinux permission issues)
+    - scp docker-compose.final.yml $SERVER_USER@$SERVER_IP:~/docker-compose.yml
+    - scp .env $SERVER_USER@$SERVER_IP:~/.env
     
-    # 4. SSH in and update containers
+    # 4. SSH in, move files to the correct folder, and update containers
     - ssh $SERVER_USER@$SERVER_IP "
+        mv ~/docker-compose.yml /srv/codebyme.de/docker-compose.yml;
+        mv ~/.env /srv/codebyme.de/.env;
         cd /srv/codebyme.de;
         
         echo 'Logging into GitLab Registry...';
