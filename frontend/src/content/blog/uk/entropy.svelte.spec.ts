@@ -1,6 +1,7 @@
 import { page } from 'vitest/browser';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+// @ts-expect-error - TypeScript doesn't natively know about .md files, but Vite+Svelte compiles them
 import EntropyPost from './entropy.md';
 
 describe('Markdown Math Compilation', () => {
