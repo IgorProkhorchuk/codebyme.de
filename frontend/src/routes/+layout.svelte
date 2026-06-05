@@ -52,6 +52,10 @@
   <footer>
     <div class="container">
       <p>&copy; 2025 CodeByMe.de | Engineering</p>
+      <div class="legal-links">
+        <a href="{langPrefix}/impressum">Impressum</a>
+        <a href="{langPrefix}/datenschutz">Datenschutzerklärung</a>
+      </div>
     </div>
   </footer>
 </div>
@@ -78,4 +82,7 @@
   main { flex: 1; padding-top: 3rem; padding-bottom: 3rem; }
 
   footer { margin-top: auto; padding: 2rem 0; text-align: center; color: #888; font-size: 0.9rem; border-top: 1px solid var(--border-color); }
+  .legal-links { margin-top: 0.5rem; display: flex; justify-content: center; gap: 1rem; }
+  .legal-links a { color: #888; transition: color 0.2s; }
+  .legal-links a:hover { color: var(--accent); }
 </style>
