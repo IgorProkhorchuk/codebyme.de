@@ -1,37 +1,36 @@
+<script>
+	import { t, locale } from '$lib/i18n';
+	
+	$: langPrefix = $locale === 'uk' ? '/uk' : '';
+</script>
+
 <svelte:head>
 	<title>CodeByMe.de | Not another tech blog</title>
 </svelte:head>
 
 <section class="hero">
-	<h1>Build. Deploy. <span class="highlight">Document.</span></h1>
-	<p class="intro">A digital land for Cloud engineering, Linux operations, and DevOps utilities.</p>
+	<h1>{$t('home.hero.title_start')}<span class="highlight">{$t('home.hero.title_highlight')}</span></h1>
+	<p class="intro">{$t('home.hero.intro')}</p>
 </section>
 
 <div class="grid">
-	<a href="/blog" class="card">
-		<div class="card-icon">✍️</div>
-		<h3>Tech Blog</h3>
-		<p>Architecture notes on Spring Boot and Quarkus</p>
+	<a href="{langPrefix}/blog?category=tech" class="card">
+		<div class="card-icon">💻</div>
+		<h3>{$t('home.tech_blog.title')}</h3>
+		<p>{$t('home.tech_blog.desc')}</p>
 	</a>
 
-	<a href="/tutorials" class="card">
-		<div class="card-icon">🐧</div>
-		<h3>Linux Guides</h3>
-		<p>Reference manuals for GNU/Linux and all things related to.</p>
-	</a>
-
-	<a href="/tools/pdf" class="card tool-highlight">
-		<div class="card-icon">📄</div>
-		<h3>PDF Generator</h3>
-		<p>Create DIN 5008 compliant envelopes and documents.</p>
-		<div class="link-text">Open Tool &rarr;</div>
+	<a href="{langPrefix}/blog?category=non_tech" class="card">
+		<div class="card-icon">☕</div>
+		<h3>{$t('home.life_blog.title')}</h3>
+		<p>{$t('home.life_blog.desc')}</p>
 	</a>
 
 	<div class="card disabled">
-		<div class="status">Beta</div>
-		<div class="card-icon">💻</div>
-		<h3>Linux Labs</h3>
-		<p>Interactive ephemeral terminals for practicing CLI commands.</p>
+		<div class="status">{$t('home.labs.beta')}</div>
+		<div class="card-icon">🐧</div>
+		<h3>{$t('home.labs.title')}</h3>
+		<p>{$t('home.labs.desc')}</p>
 	</div>
 </div>
 
@@ -99,16 +98,6 @@
 		font-size: 0.95rem;
 		margin-bottom: 1.5rem;
 		flex-grow: 1;
-	}
-
-	/* Tool Specifics */
-	.tool-highlight {
-		border-top: 4px solid var(--primary);
-	}
-	.link-text {
-		font-weight: 600;
-		color: var(--accent);
-		font-size: 0.9rem;
 	}
 
 	/* Disabled/Beta State */

@@ -1,29 +1,40 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { t, locale } from '$lib/i18n';
+  import { onMount } from 'svelte';
+  
+  // Quick fallback if layout didn't load properly
+  onMount(() => {
+	  if ($page.url.pathname.startsWith('/uk')) {
+		  locale.set('uk');
+	  }
+  });
+  
+  $: langPrefix = $locale === 'uk' ? '/uk' : '';
 </script>
 
 <svelte:head>
-  <title>{$page.status} - {$page.error?.message || 'Error'}</title>
+  <title>{$page.status} - {$t('error.generic.title')}</title>
 </svelte:head>
 
 <div class="error-container">
   <div class="status-code">{$page.status}</div>
   
   <div class="image-wrapper">
-    <img src="/404-cat.png" alt="Confused Cat" />
+    <img src="/404-cat.png" alt="{$t('error.404.cat_alt')}" />
   </div>
 
-  <h1>Ой!</h1>
+  <h1>{#if $page.status === 404}{$t('error.404.title')}{:else}{$t('error.generic.title')}{/if}</h1>
   
   <p class="message">
     {#if $page.status === 404}
-      Упс, мабуть ви забрели не туди, але якщо ви впевнені, що URL адреса сторінки правильна - перезавантажте сторінку, або повідомте адміністратора сайту.
+      {$t('error.404.message')}
     {:else}
-      Щось пішло не так: {$page.error?.message || 'Невідома помилка'}. Спробуйте перезавантажити сторінку.
+      {$t('error.generic.message')} {$page.error?.message || ''}
     {/if}
   </p>
 
-  <a href="/" class="btn">Повернутися на головну</a>
+  <a href="{langPrefix}/" class="btn">{$t('error.return_home')}</a>
 </div>
 
 <style>

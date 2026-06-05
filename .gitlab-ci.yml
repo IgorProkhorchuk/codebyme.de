@@ -112,6 +112,8 @@ deploy-to-server:
     
     # 4. SSH in, move files to the correct folder, and update containers
     - ssh $SERVER_USER@$SERVER_IP "
+        set -e;
+        mkdir -p /srv/codebyme.de || true;
         mv ~/docker-compose.yml /srv/codebyme.de/docker-compose.yml;
         mv ~/.env /srv/codebyme.de/.env;
         cd /srv/codebyme.de;
@@ -120,10 +122,10 @@ deploy-to-server:
         docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY;
         
         echo 'Pulling new images...';
-        docker compose pull;
+        docker compose -p codebyme pull;
         
         echo 'Restarting services...';
-        docker compose up -d --remove-orphans;
+        docker compose -p codebyme up -d --remove-orphans;
         
         echo 'Pruning old images...';
         docker image prune -f;
