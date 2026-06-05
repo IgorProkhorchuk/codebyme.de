@@ -1,16 +1,46 @@
-<script>
+<script lang="ts">
+  import { page } from '$app/stores';
+  import { t, locale } from '$lib/i18n';
   import '../app.css';
+  import 'prism-themes/themes/prism-one-dark.css';
+
+  export let data: any;
+
+  $: locale.set((data.lang as 'en' | 'uk') || 'en');
+  $: langPrefix = $locale === 'uk' ? '/uk' : '';
+
+  function switchLang(newLang: 'en' | 'uk') {
+      const path = $page.url.pathname;
+      let newPath: any = path;
+      if (newLang === 'uk') {
+          if (!path.startsWith('/uk')) {
+              newPath = '/uk' + (path === '/' ? '' : path);
+          }
+      } else {
+          if (path.startsWith('/uk')) {
+              newPath = path.substring(3) || '/';
+          }
+      }
+      // Preserve query params
+      return (newPath + $page.url.search) as any;
+  }
 </script>
 
 <div class="layout">
   <header>
     <div class="container navbar">
-      <a href="/" class="brand">CodeByMe<span class="dot">.de</span></a>
+      <a href="{langPrefix}/" class="brand">CodeByMe<span class="dot">.de</span></a>
       
       <nav>
-        <a href="/blog">Blog</a>
-        <a href="/tutorials">Tutorials</a>
-        <a href="/tools">Tools</a>
+        <a href="{langPrefix}/blog?category=TECH">{$t('nav.tech_blog')}</a>
+        <a href="{langPrefix}/blog?category=NON_TECH">{$t('nav.life_blog')}</a>
+        <a href="{langPrefix}/labs">{$t('nav.sysadmin_labs')}</a>
+        
+        <div class="lang-switcher">
+          <a href={switchLang('en')} class:active={$locale === 'en'}>EN</a>
+          <span>|</span>
+          <a href={switchLang('uk')} class:active={$locale === 'uk'}>UK</a>
+        </div>
       </nav>
     </div>
   </header>
@@ -36,9 +66,14 @@
   .brand { font-weight: 800; font-size: 1.25rem; color: var(--primary); }
   .dot { color: var(--accent); }
 
-  nav { display: flex; gap: 1.5rem; }
+  nav { display: flex; gap: 1.5rem; align-items: center; }
   nav a { font-size: 0.95rem; font-weight: 600; color: #555; transition: color 0.2s; }
   nav a:hover { color: var(--accent); }
+
+  .lang-switcher { display: flex; gap: 0.5rem; align-items: center; margin-left: 1rem; border-left: 1px solid #ddd; padding-left: 1.5rem; }
+  .lang-switcher a { font-size: 0.85rem; font-weight: 600; color: #999; }
+  .lang-switcher a.active { color: var(--primary); font-weight: 800; }
+  .lang-switcher span { color: #ddd; font-size: 0.85rem; }
 
   main { flex: 1; padding-top: 3rem; padding-bottom: 3rem; }
 
