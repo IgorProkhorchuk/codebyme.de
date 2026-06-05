@@ -15,12 +15,12 @@
 	onMount(() => {
 		// Render Mermaid diagrams using mermaid.ink (just like GitHub does)
 		const mermaidBlocks = document.querySelectorAll('.language-mermaid');
-		mermaidBlocks.forEach((block) => {
+		mermaidBlocks.forEach((block: Element) => {
 			const code = block.textContent || '';
 			const base64 = btoa(unescape(encodeURIComponent(code)));
 			
 			block.innerHTML = `<img src="https://mermaid.ink/svg/${base64}" alt="Mermaid diagram" style="max-width: 100%; height: auto; margin: 0 auto; display: block; border-radius: 8px; padding: 1rem; background: white;" />`;
-			block.style.display = 'block';
+			(block as HTMLElement).style.display = 'block';
 			
 			const pre = block.parentElement;
 			if (pre) {

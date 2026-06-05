@@ -1,17 +1,17 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
   import { t, locale } from '$lib/i18n';
   import '../app.css';
   import 'prism-themes/themes/prism-one-dark.css';
 
-  export let data;
+  export let data: any;
 
-  $: locale.set(data.lang);
+  $: locale.set((data.lang as 'en' | 'uk') || 'en');
   $: langPrefix = $locale === 'uk' ? '/uk' : '';
 
-  function switchLang(newLang) {
+  function switchLang(newLang: 'en' | 'uk') {
       const path = $page.url.pathname;
-      let newPath = path;
+      let newPath: any = path;
       if (newLang === 'uk') {
           if (!path.startsWith('/uk')) {
               newPath = '/uk' + (path === '/' ? '' : path);
@@ -22,7 +22,7 @@
           }
       }
       // Preserve query params
-      return newPath + $page.url.search;
+      return (newPath + $page.url.search) as any;
   }
 </script>
 

@@ -3,6 +3,8 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from './+page.svelte';
 import { locale } from '$lib/i18n';
+import uk from '$lib/translations/uk';
+import en from '$lib/translations/en';
 
 describe('/[[lang=lang]]/+page.svelte', () => {
 	beforeEach(() => {
@@ -15,18 +17,15 @@ describe('/[[lang=lang]]/+page.svelte', () => {
 		
 		const heading = page.getByRole('heading', { level: 1 });
 		await expect.element(heading).toBeInTheDocument();
-		// "Build. Deploy. Document." is split in HTML, check for part of it
-		await expect.element(page.getByText('Build. Deploy.')).toBeInTheDocument();
-		await expect.element(page.getByText('Tech Blog')).toBeInTheDocument();
-		await expect.element(page.getByText('Life Blog')).toBeInTheDocument();
+		await expect.element(page.getByRole('heading', { name: en['home.tech_blog.title'], exact: true })).toBeInTheDocument();
+		await expect.element(page.getByRole('heading', { name: en['home.life_blog.title'], exact: true })).toBeInTheDocument();
 	});
 
 	it('should render ukrainian text when locale is changed', async () => {
 		locale.set('uk');
 		render(Page);
 		
-		await expect.element(page.getByText('Будуй. Деплой.')).toBeInTheDocument();
-		await expect.element(page.getByText('Технічний Блог')).toBeInTheDocument();
-		await expect.element(page.getByText('Особистий Блог')).toBeInTheDocument();
+		await expect.element(page.getByRole('heading', { name: uk['home.tech_blog.title'], exact: true })).toBeInTheDocument();
+		await expect.element(page.getByRole('heading', { name: uk['home.life_blog.title'], exact: true })).toBeInTheDocument();
 	});
 });
