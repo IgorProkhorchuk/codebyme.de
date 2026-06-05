@@ -122,10 +122,10 @@ deploy-to-server:
         docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY;
         
         echo 'Pulling new images...';
-        docker compose pull;
+        docker compose -p codebyme pull;
         
         echo 'Restarting services...';
-        docker compose up -d --remove-orphans;
+        docker compose -p codebyme up -d --remove-orphans;
         
         echo 'Pruning old images...';
         docker image prune -f;
