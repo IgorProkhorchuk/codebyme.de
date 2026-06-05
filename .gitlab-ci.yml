@@ -112,6 +112,8 @@ deploy-to-server:
     
     # 4. SSH in, move files to the correct folder, and update containers
     - ssh $SERVER_USER@$SERVER_IP "
+        set -e;
+        mkdir -p /srv/codebyme.de || true;
         mv ~/docker-compose.yml /srv/codebyme.de/docker-compose.yml;
         mv ~/.env /srv/codebyme.de/.env;
         cd /srv/codebyme.de;
