@@ -1,151 +1,71 @@
-# CodeByMe.de - Tech Blog
+# CodeByMe.de
 
-A tech blog, Linux tutorials, interactive labs, and PDF generation tools.
+A personal digital notebook, tech blog, and interactive lab environment built with modern web technologies. The site is designed to be fully bilingual (English / Ukrainian) and uses a Git-based CMS approach where content is driven by simple Markdown files.
 
-## Architecture Overview
+## Features
 
-This project uses a **Monorepo** structure to house both the Backend and Frontend, ensuring atomic commits and synchronized deployments.
+- **Tech Blog**: Code snippets, architecture designs, and technical notes. Includes seamless code copying and automatic syntax highlighting.
+- **Life Blog**: Thoughts, hobbies, and life outside the terminal.
+- **SysAdmin Labs (Beta)**: Interactive Linux environments for practicing CLI commands right in the browser.
+- **Bilingual Support**: Fully localized in English and Ukrainian, with a smart fallback system for untranslated articles.
+- **Git-Based CMS**: Articles are written in Markdown (`.md`) and automatically parsed and rendered by SvelteKit via `mdsvex`. Diagrams are rendered natively using Mermaid.
 
-### Tech Stack
+## Tech Stack
 
-| Component | Technology | Version | Description |
-| :--- | :--- | :--- | :--- |
-| **Backend** | **Spring Boot** | 4.0.0 | Core API, Business Logic, Kafka Consumers. |
-| **Language** | **Java** | 25 (LTS) | Using latest language features. |
-| **Build Tool** | **Gradle** | 9.x | Multi-module build (`app` + `shared`). |
-| **Frontend** | **SvelteKit** | 2.0 | SSR, Reactive UI, Linux Terminal simulation. |
-| **Runtime** | **Node.js** | 20 | Runs the SvelteKit Adapter-Node server. |
-| **Database** | **PostgreSQL** | 16 | Relational data persistence. |
-| **Message Broker** | **Apache Kafka** | 3.7 | Real-time event streaming for Linux Labs. |
-
-### Network & Deployment Topology
-
-  * **Reverse Proxy:** Apache HTTP Server (Host) handles SSL termination and routing.
-      * `/api` → Proxies to Spring Boot Backend (`127.0.0.1:8083`).
-      * `/` → Proxies to SvelteKit Frontend (`127.0.0.1:8082`).
-  * **Containerization:** Both applications run in optimized Docker containers on a custom internal bridge network.
-  * **CI/CD:** Automated pipeline via **GitLab CI** deploying to an **AlmaLinux 9.5** server.
-
------
-
-## DevOps & CI/CD Pipeline
-
-The project follows a **GitOps** workflow. Code is pushed to GitHub, mirrored to GitLab, and automatically deployed to production.
-
-### The Pipeline Flow
-
-1.  **Merge to main:** after merging to the `main` branch on GitHub.
-2.  **Mirroring:** Code is instantly synced to GitLab.
-3.  **Test Stage:**
-      * Runs JUnit 5 tests for Backend (in `gradle:jdk25` container).
-      * Runs ESLint/Prettier/Check for Frontend (in `node:20-alpine` container).
-4.  **Build Stage:**
-      * Builds Docker images using **Multi-Stage Builds**.
-      * Pushes images to **GitLab Container Registry**.
-5.  **Deploy Stage:**
-      * Connects to Production Server via SSH.
-      * Generates a dynamic `docker-compose.yml` with versioned image tags.
-      * Pulls new images and performs a zero-downtime container replacement.
-
-### Infrastructure Configuration
-
-  * **CI Configuration:** [`codebyme.de/.gitlab-ci.yml`](.gitlab-ci.yml) - Defines the Test -\> Build -\> Deploy stages.
-  * **Production Compose:** [`codebyme.de/docker-compose.prod.yml`](docker-compose.prod.yml) - Service definition for the production environment.
-
-### Production Environment Variables
-
-To successfully run the `docker-compose.prod.yml` in production, you must create a `.env` file in the same directory on your server. This file provides the backend and the local PostgreSQL database container with the necessary credentials.
-
-Create a `.env` file with the following contents:
-
-```env
-DB_NAME=codebyme
-DB_USER=codebyme_user
-DB_PASS=your_secure_password
-```
-
-### Docker Configuration
-
-Multi-stage Dockerfiles to ensure lightweight production images (stripping out build tools like Gradle and npm).
-
-  * **Backend Dockerfile:** [`backend/Dockerfile`](backend/Dockerfile) - Builds Spring Boot Fat Jar.
-  * **Frontend Dockerfile:** [`frontend/Dockerfile`](frontend/Dockerfile) - Builds SvelteKit Node Adapter.
-
------
+| Component | Technology | Description |
+| :--- | :--- | :--- |
+| **Frontend** | **SvelteKit** | SSR, Reactive UI, Markdown Parsing (`mdsvex`), i18n routing. |
+| **Backend** | **Spring Boot** | Core API, Business Logic. |
+| **Language** | **Java / TypeScript** | |
+| **Database** | **PostgreSQL** | Relational data persistence. |
 
 ## Local Development
 
+If you want to run the project locally, you can start the frontend development server.
+
 ### Prerequisites
 
-  * Java 25 SDK
-  * Node.js 24.11+
-  * Gradle 9.1.0
-  * Docker & Docker Compose
-  * PostgreSQL 17.4
+- Node.js 20+
 
-## Key Features (Implemented & Planned)
+### Running the Frontend Locally
 
-### Implemented
+1. Navigate to the `frontend` directory:
+   ```bash
+   cd frontend
+   ```
+2. Install the dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+4. Open your browser and navigate to `http://localhost:5173`.
 
-  * **Multi-Module Gradle Build:** Separation of `app` (API) and `shared` (Library) modules.
-  * **Full-Stack Proxying:** Seamless local dev environment without CORS issues.
-  * **Automated Deployment:** Push-to-Deploy pipeline active.
+### Running Tests (Frontend)
 
-### In Progress
+The frontend includes a suite of unit and component tests using Vitest and Playwright.
 
-  * **Linux Labs:** Interactive xterm.js terminal connected to Docker containers via WebSockets.
-  * **PDF Generator:** DHL-compliant envelope generation using `@react-pdf` logic ported to Svelte.
-  * **Kafka Integration:** Real-time event streaming for user activity and lab status.
-
------
-
-## Feedback
-
-I'd be happy for some feedback about the project structure, tech choices, or any other aspect!
-
-```mermaid
-graph TD
-    %% Nodes
-    User((User))
-    
-    subgraph "Frontend Container (SvelteKit)"
-        UI[Web Interface]
-    end
-
-    subgraph "Backend Modular Monolith (Spring Boot)"
-        Host[":app (Host & Config)"]
-        
-        subgraph "Domain Modules"
-            Blog[":blog"]
-            Pdf[":pdfEnvelopeGeneration"]
-            Tuts[":linuxTutorials"]
-            Labs[":linuxLabs"]
-        end
-        
-        Shared[":shared (Utils/Common)"]
-    end
-    
-    DB[(PostgreSQL)]
-
-
-    %% Relationships
-    User -->|HTTPS| UI
-    UI -->|REST API| Host
-    
-    Host --> Blog
-    Host --> Pdf
-    Host --> Tuts
-    Host --> Labs
-    
-    Blog --> Shared
-    Pdf --> Shared
-    Tuts --> Shared
-    Labs --> Shared
-    
-    Blog -.->|JPA| DB
-    Tuts -.->|JPA| DB
-    
-    %% Style
-    style Host fill:#f9f,stroke:#333,stroke-width:2px
-    style Shared fill:#eee,stroke:#333,stroke-width:2px
+To run the tests locally:
+```bash
+cd frontend
+npm run test
 ```
+This will execute all tests, including localized UI component tests and i18n logic checks.
+
+## Content Management
+
+Adding a new article to the blog is as simple as creating a Markdown file!
+
+1. Create a new `.md` file in `frontend/src/content/blog/en/` (for English) or `frontend/src/content/blog/uk/` (for Ukrainian).
+2. Add the required frontmatter at the top of the file:
+   ```yaml
+   ---
+   title: "My New Article"
+   date: "2026-06-05"
+   category: "TECH"
+   ---
+   ```
+3. Write your content in Markdown. The site automatically handles code highlighting and renders Mermaid diagrams!
+4. Commit and push your changes. The CI/CD pipeline will automatically deploy the new article to the live site.
