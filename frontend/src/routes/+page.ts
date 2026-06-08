@@ -7,7 +7,8 @@ export async function load() {
 			title: post.metadata?.title || 'Untitled',
 			date: post.metadata?.date || 'Unknown Date',
 			category: post.metadata?.category || 'UNCATEGORIZED',
-			tags: post.metadata?.tags || []
+			tags: post.metadata?.tags || [],
+			readingTime: post.metadata?.readingTime || '1 min read'
 		}));
 		
 	finalPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

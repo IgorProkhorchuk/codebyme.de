@@ -46,6 +46,7 @@
 			<a href="/blog/{post.slug}" class="post-row">
 				<div class="post-row-left">
 					<time>{post.date}</time>
+					<span class="reading-time">⏱ {post.readingTime}</span>
 					<h3>{post.title}</h3>
 				</div>
 				<div class="post-row-right">
@@ -178,9 +179,14 @@
 		gap: 0.5rem;
 	}
 	.post-row-left time {
+		font-size: 0.9rem;
+		color: #666;
+		white-space: nowrap;
+	}
+	.reading-time {
 		font-size: 0.85rem;
 		color: #888;
-		font-family: monospace;
+		white-space: nowrap;
 	}
 	.post-row-left h3 {
 		margin: 0;

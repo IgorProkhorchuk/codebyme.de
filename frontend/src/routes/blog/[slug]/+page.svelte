@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Giscus from '$lib/components/Giscus.svelte';
 	
 	export let data: {
 		content: any;
@@ -7,6 +8,7 @@
 			title: string;
 			date: string;
 			category: string;
+			readingTime: string;
 		};
 	};
 
@@ -60,18 +62,21 @@
 </svelte:head>
 
 <article class="post-container">
-
-	<header class="post-header">
-		<h1>{data.meta.title}</h1>
-		<div class="meta">
-			<time>{data.meta.date}</time>
-			<span class="category">{data.meta.category}</span>
+		<header class="post-header">
+			<h1>{data.meta.title}</h1>
+			<div class="meta">
+				<time>{data.meta.date}</time>
+				<span class="reading-time">⏱ {data.meta.readingTime || '1 min read'}</span>
+				<span class="divider">•</span>
+				<span class="category">{data.meta.category}</span>
+			</div>
+		</header>
+		
+		<div class="markdown-content">
+			<svelte:component this={data.content} />
 		</div>
-	</header>
-	
-	<div class="markdown-content">
-		<svelte:component this={data.content} />
-	</div>
+
+		<Giscus />
 </article>
 
 <style>
@@ -100,6 +105,18 @@
 		align-items: center;
 		gap: 1rem;
 		color: #666;
+		font-size: 0.95rem;
+	}
+
+	.meta time {
+		color: #666;
+	}
+
+	.reading-time {
+		color: #888;
+	}
+
+	.divider {
 		font-size: 0.95rem;
 	}
 
