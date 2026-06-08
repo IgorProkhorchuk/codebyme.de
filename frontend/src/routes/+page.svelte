@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
-	export let data;
+	export let data: any;
 
 	let searchQuery = '';
 
-	function handleSearch(e) {
+	function handleSearch(e: Event) {
 		e.preventDefault();
 		if (searchQuery.trim()) {
 			goto(`/blog?q=${encodeURIComponent(searchQuery.trim())}`);
