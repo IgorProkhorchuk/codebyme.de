@@ -1,7 +1,8 @@
 ---
-title: 'How to Discover Files from Previous Git Commits'
-date: '2024-02-18'
-category: 'TUTORIAL'
+title: 'How to Discover Files from Previous Commits in Git'
+date: '2025-04-10'
+category: 'TECH'
+tags: ['git']
 ---
 
 Git doesn't just track your current code — it holds the entire history of your project. Every commit is a snapshot you can inspect, compare, or restore from at any time. This post covers the most practical ways to navigate that history and work with files from the past.
