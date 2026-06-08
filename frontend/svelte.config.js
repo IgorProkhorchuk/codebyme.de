@@ -4,6 +4,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { mdsvex } from 'mdsvex';
 import remarkMath from 'remark-math';
 import rehypeKatexSvelte from 'rehype-katex-svelte';
+import { remarkReadingTime } from './remark-reading-time.js';
 
 import rehypeSlug from 'rehype-slug';
 
@@ -17,7 +18,7 @@ const config = {
 		vitePreprocess(),
 		mdsvex({
 			extensions: ['.md', '.svx'],
-			remarkPlugins: [remarkMath],
+			remarkPlugins: [remarkMath, remarkReadingTime],
 			rehypePlugins: [rehypeKatexSvelte, rehypeSlug]
 		})
 	],

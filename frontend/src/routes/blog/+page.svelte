@@ -56,6 +56,7 @@
 					<div class="post-meta">
 						<span class="category" data-cat={post.category}>{post.category}</span>
 						<time>{post.date}</time>
+						<span class="reading-time">⏱ {post.readingTime}</span>
 					</div>
 					<h2>{post.title}</h2>
 					{#if post.tags && post.tags.length > 0}
@@ -197,6 +198,12 @@
 		color: var(--accent, #4a90e2);
 		font-weight: 600;
 		font-size: 0.95rem;
+	}
+
+	.reading-time {
+		color: #888;
+		font-size: 0.85rem;
+		margin-left: auto;
 	}
 
 	.empty-state {
