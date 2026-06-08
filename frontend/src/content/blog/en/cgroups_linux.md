@@ -1,3 +1,10 @@
+---
+title: 'Control Groups (cgroups) in Linux'
+date: '2026-06-09'
+category: 'TECH'
+tags: ['linux', 'cgroups', 'kernel', 'containers', 'systemd', 'docker', 'kubernetes']
+---
+
 # Control Groups (cgroups) in Linux: A Deep Technical Reference
 
 ## Table of Contents
@@ -15,12 +22,12 @@
    - [cpuset](#cpuset-controller)
    - [memory](#memory-controller)
    - [blkio / io](#blkio--io-controller)
-   - [net\_cls and net\_prio](#net_cls-and-net_prio-controllers)
+   - [net_cls and net_prio](#net_cls-and-net_prio-controllers)
    - [devices](#devices-controller)
    - [freezer](#freezer-controller)
    - [pids](#pids-controller)
    - [hugetlb](#hugetlb-controller)
-   - [perf\_event](#perf_event-controller)
+   - [perf_event](#perf_event-controller)
    - [rdma](#rdma-controller)
 9. [Process Membership and Inheritance](#process-membership-and-inheritance)
 10. [Notifications and Events](#notifications-and-events)
@@ -57,19 +64,19 @@ A critical mental model: cgroups do **not** operate on individual processes in i
 
 ## A Brief History
 
-| Year | Event |
-|------|-------|
-| 2006 | Paul Menage and Rohit Seth at Google begin development of "process containers" |
-| 2007 | Renamed to "control groups" to avoid confusion with Linux Containers (LXC); merged into kernel 2.6.24 |
-| 2008 | v1 subsystems gradually merged: `cpuset`, `memory`, `blkio`, `freezer` |
-| 2012 | `net_cls`, `net_prio`, `hugetlb`, `perf_event` added |
-| 2013 | `pids` controller added |
-| 2013 | Tejun Heo begins designing cgroups v2 to address v1's architectural inconsistencies |
-| 2016 | cgroups v2 merged into kernel 4.5 as an official (though incomplete) replacement |
-| 2018 | systemd 233+ starts defaulting to unified hierarchy (v2) when available |
-| 2021 | RHEL 9 / Fedora 31+ ship with cgroups v2 as default |
-| 2022 | Kubernetes 1.25 adds stable support for cgroup v2 |
-| Present | v2 is the clear future; most distributions ship v2 by default |
+| Year    | Event                                                                                                 |
+| ------- | ----------------------------------------------------------------------------------------------------- |
+| 2006    | Paul Menage and Rohit Seth at Google begin development of "process containers"                        |
+| 2007    | Renamed to "control groups" to avoid confusion with Linux Containers (LXC); merged into kernel 2.6.24 |
+| 2008    | v1 subsystems gradually merged: `cpuset`, `memory`, `blkio`, `freezer`                                |
+| 2012    | `net_cls`, `net_prio`, `hugetlb`, `perf_event` added                                                  |
+| 2013    | `pids` controller added                                                                               |
+| 2013    | Tejun Heo begins designing cgroups v2 to address v1's architectural inconsistencies                   |
+| 2016    | cgroups v2 merged into kernel 4.5 as an official (though incomplete) replacement                      |
+| 2018    | systemd 233+ starts defaulting to unified hierarchy (v2) when available                               |
+| 2021    | RHEL 9 / Fedora 31+ ship with cgroups v2 as default                                                   |
+| 2022    | Kubernetes 1.25 adds stable support for cgroup v2                                                     |
+| Present | v2 is the clear future; most distributions ship v2 by default                                         |
 
 Google ran cgroups in production at massive scale — the motivation was enforcing resource isolation across their internal workload scheduler (Borg, the predecessor to Kubernetes).
 
@@ -191,6 +198,7 @@ If a controller is not listed in the parent's `cgroup.subtree_control`, child cg
 ### No Internal Process Constraint
 
 A v2 cgroup cannot simultaneously:
+
 - Contain processes directly (have entries in `cgroup.procs`)
 - Have controller-specific resource files active (i.e., be an intermediate node with children)
 
@@ -202,18 +210,18 @@ If you want to limit a group, that group must be a **leaf** or the root. This pr
 
 ## v1 vs v2: Key Differences
 
-| Aspect | v1 | v2 |
-|--------|----|----|
-| Hierarchy | Multiple, per-controller | Single unified |
-| Process placement | Per-controller, independently | One location for all controllers |
-| Thread granularity | Some controllers operated per-thread | Process-level by default; opt-in thread mode |
-| Controller enablement | Mount-time | Runtime via `cgroup.subtree_control` |
-| Memory accounting | `memory.limit_in_bytes`, etc. | `memory.max`, `memory.high`, `memory.min`, `memory.low` |
-| CPU scheduling | `cpu.shares`, `cpu.cfs_quota_us` | `cpu.weight`, `cpu.max` |
-| I/O controller | `blkio` | `io` (more consistent, includes latency) |
-| PSI (Pressure Stall Information) | Not available | Available via `memory.pressure`, `cpu.pressure`, `io.pressure` |
-| Delegation | Ad hoc | First-class with `cgroup.delegate` |
-| Notification | `cgroup.event_control` | inotify on cgroup files |
+| Aspect                           | v1                                   | v2                                                             |
+| -------------------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| Hierarchy                        | Multiple, per-controller             | Single unified                                                 |
+| Process placement                | Per-controller, independently        | One location for all controllers                               |
+| Thread granularity               | Some controllers operated per-thread | Process-level by default; opt-in thread mode                   |
+| Controller enablement            | Mount-time                           | Runtime via `cgroup.subtree_control`                           |
+| Memory accounting                | `memory.limit_in_bytes`, etc.        | `memory.max`, `memory.high`, `memory.min`, `memory.low`        |
+| CPU scheduling                   | `cpu.shares`, `cpu.cfs_quota_us`     | `cpu.weight`, `cpu.max`                                        |
+| I/O controller                   | `blkio`                              | `io` (more consistent, includes latency)                       |
+| PSI (Pressure Stall Information) | Not available                        | Available via `memory.pressure`, `cpu.pressure`, `io.pressure` |
+| Delegation                       | Ad hoc                               | First-class with `cgroup.delegate`                             |
+| Notification                     | `cgroup.event_control`               | inotify on cgroup files                                        |
 
 ---
 
@@ -249,18 +257,18 @@ You cannot `rm -rf` a cgroup directory — you must first move all processes out
 
 Every cgroup directory contains:
 
-| File | Description |
-|------|-------------|
-| `cgroup.procs` | PIDs of all processes in this cgroup (one per line). Write a PID to move that process here. |
-| `cgroup.threads` | (v2) Thread IDs. Like `cgroup.procs` but for individual threads. |
-| `cgroup.controllers` | (v2) Controllers available at this node. |
-| `cgroup.subtree_control` | (v2) Controllers enabled for children of this node. |
-| `cgroup.events` | (v2) Notifications: `populated` flag (whether cgroup has live processes). |
-| `cgroup.max.descendants` | (v2) Maximum number of descendant cgroups allowed. |
-| `cgroup.max.depth` | (v2) Maximum depth below this cgroup. |
-| `cgroup.stat` | (v2) Statistics: number of dying descendants, etc. |
-| `notify_on_release` | (v1) Trigger `release_agent` when cgroup becomes empty. |
-| `tasks` | (v1) Thread IDs. Deprecated in v2. |
+| File                     | Description                                                                                 |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| `cgroup.procs`           | PIDs of all processes in this cgroup (one per line). Write a PID to move that process here. |
+| `cgroup.threads`         | (v2) Thread IDs. Like `cgroup.procs` but for individual threads.                            |
+| `cgroup.controllers`     | (v2) Controllers available at this node.                                                    |
+| `cgroup.subtree_control` | (v2) Controllers enabled for children of this node.                                         |
+| `cgroup.events`          | (v2) Notifications: `populated` flag (whether cgroup has live processes).                   |
+| `cgroup.max.descendants` | (v2) Maximum number of descendant cgroups allowed.                                          |
+| `cgroup.max.depth`       | (v2) Maximum depth below this cgroup.                                                       |
+| `cgroup.stat`            | (v2) Statistics: number of dying descendants, etc.                                          |
+| `notify_on_release`      | (v1) Trigger `release_agent` when cgroup becomes empty.                                     |
+| `tasks`                  | (v1) Thread IDs. Deprecated in v2.                                                          |
 
 ---
 
@@ -273,27 +281,35 @@ Controls how much CPU time a cgroup can consume.
 #### v1
 
 **Shares (relative weight)**:
+
 ```
 cpu.shares   (default: 1024)
 ```
+
 Shares are **relative** — if cgroup A has 1024 shares and cgroup B has 512, A gets ~2× the CPU time when both are busy. Shares only matter when CPUs are **contended**; a cgroup with low shares can use 100% CPU if others are idle.
 
 **CFS bandwidth control (hard limits)**:
+
 ```
 cpu.cfs_period_us    (default: 100000 = 100ms)
 cpu.cfs_quota_us     (default: -1 = unlimited)
 ```
+
 To limit a cgroup to 50% of one CPU:
+
 ```bash
 echo 100000 > cpu.cfs_period_us
 echo  50000 > cpu.cfs_quota_us
 ```
+
 To allow use of 2 full CPUs (200% on a multi-core system):
+
 ```bash
 echo 200000 > cpu.cfs_quota_us
 ```
 
 **RT scheduling** (real-time tasks):
+
 ```
 cpu.rt_period_us
 cpu.rt_runtime_us
@@ -354,6 +370,7 @@ echo "0"   > /sys/fs/cgroup/cpuset/realtime/cpuset.mems
 ```
 
 In v2:
+
 ```
 cpuset.cpus
 cpuset.mems
@@ -387,6 +404,7 @@ memory.move_charge_at_immigrate  whether to carry charges when moving tasks
 ```
 
 Setting a 512 MiB hard limit in v1:
+
 ```bash
 echo $((512 * 1024 * 1024)) > memory.limit_in_bytes
 ```
@@ -508,6 +526,7 @@ devices.list     current ACL
 ```
 
 Rule format: `TYPE MAJOR:MINOR ACCESS`
+
 - TYPE: `c` (char), `b` (block), `a` (all)
 - MAJOR:MINOR: device numbers or `*` wildcard
 - ACCESS: `r` (read), `w` (write), `m` (mknod)
@@ -613,6 +632,7 @@ rdma.current
 When a process calls `fork()`, the child inherits the parent's cgroup membership. When a process calls `exec()`, cgroup membership does **not** change (it stays in the same cgroup).
 
 To move a process to a different cgroup:
+
 ```bash
 echo <PID> > /sys/fs/cgroup/target-cgroup/cgroup.procs
 ```
@@ -812,6 +832,7 @@ Configuration in `/etc/systemd/oomd.conf`.
 ## cgroups in Containers
 
 Containers are fundamentally a combination of:
+
 - **namespaces** (isolation: PID, net, mnt, uts, ipc, user)
 - **cgroups** (resource control)
 - **seccomp + capabilities + LSM** (security)
@@ -821,11 +842,13 @@ Containers are fundamentally a combination of:
 Docker uses containerd as its runtime, which uses runc to create containers. runc uses libcontainer to set up cgroups.
 
 When you run:
+
 ```bash
 docker run --memory=512m --cpus=1.5 --pids-limit=100 nginx
 ```
 
 Docker translates these flags into cgroup settings:
+
 ```
 /sys/fs/cgroup/system.slice/docker-<id>.scope/memory.max    = 536870912
 /sys/fs/cgroup/system.slice/docker-<id>.scope/cpu.max       = 150000 100000
@@ -849,8 +872,9 @@ Kubernetes assigns cgroups per Pod and per container within a Pod:
 ```
 
 QoS classes map to cgroup hierarchy:
+
 - **Guaranteed** (requests == limits): `/kubepods.slice/kubepods-pod<uid>.slice/`
-- **Burstable** (requests < limits): `/kubepods.slice/kubepods-burstable.slice/...`
+- **Burstable** (requests &lt; limits): `/kubepods.slice/kubepods-burstable.slice/...`
 - **BestEffort** (no requests/limits): `/kubepods.slice/kubepods-besteffort.slice/...`
 
 Resource requests → `cpu.weight` and `memory.min` (guarantees).
@@ -859,6 +883,7 @@ Resource limits → `cpu.max` and `memory.max` (hard caps).
 #### cgroup v2 and Kubernetes
 
 Since Kubernetes 1.25, cgroup v2 support is stable. Key differences from v1:
+
 - Memory limits use `memory.max`; memory requests translate to `memory.min` (protection)
 - CPU limits use `cpu.max`; CPU requests translate to `cpu.weight`
 - Swap is now controllable via `memory.swap.max`
@@ -950,6 +975,7 @@ systemd-cgtop
 ### cat /sys/fs/cgroup/.../memory.stat
 
 Detailed memory breakdown:
+
 ```
 anon 4096000
 file 8192000
@@ -985,7 +1011,7 @@ bpftrace -e 'kprobe:cgroup_migrate { printf("migrate: pid=%d\n", ((struct task_s
 
 ```bash
 # v1
-cgget -g memory:/ 
+cgget -g memory:/
 
 # systemd properties
 systemctl show nginx.service | grep -E '^(Memory|CPU|Tasks|IO)'
@@ -1004,6 +1030,7 @@ systemctl show nginx.service | grep -E '^(Memory|CPU|Tasks|IO)'
 ### Delegation Safety
 
 When delegating a cgroup subtree (e.g., to Docker or a user), the kernel in v2 enforces:
+
 - A non-privileged process can only move processes it has `ptrace`-level authority over into a cgroup it owns
 - The `nsdelegate` mount option (default on modern kernels) prevents processes in cgroup namespaces from escaping their subtree
 
@@ -1014,6 +1041,7 @@ Without a cgroup namespace, a containerised process can read its actual host cgr
 ### Resource Exhaustion Attacks
 
 Without cgroup limits, a compromised container can:
+
 - Fork-bomb the host (`pids.max` prevents this)
 - Consume all memory and trigger host OOM (`memory.max` prevents this)
 - Saturate disk I/O starving other workloads (`io.max` / `blkio.throttle` prevents this)
@@ -1056,7 +1084,7 @@ The `release_agent` mechanism (runs a script when a cgroup becomes empty) is asy
 
 ## Summary
 
-cgroups are the kernel's answer to the question: *"How do we share a machine among multiple workloads without them interfering with each other?"*
+cgroups are the kernel's answer to the question: _"How do we share a machine among multiple workloads without them interfering with each other?"_
 
 They evolved from a pragmatic Google solution (v1) into a coherent kernel subsystem (v2) that now underpins every major container runtime and workload scheduler in production Linux. Understanding cgroups at this level — from the cgroupfs interface files down to page charging and PSI — is essential for anyone operating containers at scale, tuning Linux performance, or building infrastructure tools.
 
@@ -1064,4 +1092,4 @@ The single most important mental shift: **a cgroup is not a wall, it's a policy*
 
 ---
 
-*Kernel version references: Linux 5.10+ (LTS), 6.x where noted. Interface files and semantics may differ slightly on older kernels. Always consult `Documentation/admin-guide/cgroup-v2.rst` in the kernel source for authoritative detail.*
+_Kernel version references: Linux 5.10+ (LTS), 6.x where noted. Interface files and semantics may differ slightly on older kernels. Always consult `Documentation/admin-guide/cgroup-v2.rst` in the kernel source for authoritative detail._
