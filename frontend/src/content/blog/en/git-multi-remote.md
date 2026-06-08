@@ -2,6 +2,7 @@
 title: 'Multi-Remote Git'
 date: '2025-02-11'
 category: 'TECH'
+tags: ['git']
 ---
 
 # How to Set Up Git to Pull from One Repository but Push to Two Simultaneously

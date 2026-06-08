@@ -2,6 +2,7 @@
 title: 'Limit Resources Docker'
 date: '2025-06-06'
 category: 'TECH'
+tags: ['docker', 'containers']
 ---
 
 To limit the resources a Docker container can use, you can set resource constraints when running the container. Here are the key options you can use with `docker run`:

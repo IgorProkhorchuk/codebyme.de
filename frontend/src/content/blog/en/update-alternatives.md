@@ -2,6 +2,7 @@
 title: '`update-alternatives` in Linux'
 date: '2025-07-16'
 category: 'TECH'
+tags: ['linux']
 ---
 
 > Managing multiple versions of the same tool — the right way.
