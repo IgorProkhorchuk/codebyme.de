@@ -5,6 +5,8 @@ import { mdsvex } from 'mdsvex';
 import remarkMath from 'remark-math';
 import rehypeKatexSvelte from 'rehype-katex-svelte';
 
+import rehypeSlug from 'rehype-slug';
+
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	extensions: ['.svelte', '.md', '.svx'],
@@ -16,7 +18,7 @@ const config = {
 		mdsvex({
 			extensions: ['.md', '.svx'],
 			remarkPlugins: [remarkMath],
-			rehypePlugins: [rehypeKatexSvelte]
+			rehypePlugins: [rehypeKatexSvelte, rehypeSlug]
 		})
 	],
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { t, locale } from '$lib/i18n';
 	
 	export let data: {
 		content: any;
@@ -9,7 +8,6 @@
 			date: string;
 			category: string;
 		};
-		isTranslated: boolean;
 	};
 
 	onMount(() => {
@@ -62,12 +60,6 @@
 </svelte:head>
 
 <article class="post-container">
-	{#if !data.isTranslated}
-		<div class="translation-alert">
-			<span class="icon">🌐</span>
-			{$t('blog.not_translated')}
-		</div>
-	{/if}
 
 	<header class="post-header">
 		<h1>{data.meta.title}</h1>
@@ -87,19 +79,6 @@
 		max-width: 800px;
 		margin: 0 auto;
 		padding: 2rem 0;
-	}
-
-	.translation-alert {
-		background-color: #fff3cd;
-		color: #856404;
-		padding: 1rem 1.5rem;
-		border-radius: 8px;
-		margin-bottom: 2rem;
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		border: 1px solid #ffeeba;
-		font-weight: 500;
 	}
 
 	.post-header {

@@ -1,40 +1,29 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { t, locale } from '$lib/i18n';
-  import { onMount } from 'svelte';
-  
-  // Quick fallback if layout didn't load properly
-  onMount(() => {
-	  if ($page.url.pathname.startsWith('/uk')) {
-		  locale.set('uk');
-	  }
-  });
-  
-  $: langPrefix = $locale === 'uk' ? '/uk' : '';
 </script>
 
 <svelte:head>
-  <title>{$page.status} - {$t('error.generic.title')}</title>
+  <title>{$page.status} - Error</title>
 </svelte:head>
 
 <div class="error-container">
   <div class="status-code">{$page.status}</div>
   
   <div class="image-wrapper">
-    <img src="/404-cat.png" alt="{$t('error.404.cat_alt')}" />
+    <img src="/404-cat.png" alt="Lost cat illustration" />
   </div>
 
-  <h1>{#if $page.status === 404}{$t('error.404.title')}{:else}{$t('error.generic.title')}{/if}</h1>
+  <h1>{#if $page.status === 404}Page Not Found{:else}Something went wrong{/if}</h1>
   
   <p class="message">
     {#if $page.status === 404}
-      {$t('error.404.message')}
+      The page you are looking for doesn't exist or has been moved.
     {:else}
-      {$t('error.generic.message')} {$page.error?.message || ''}
+      An unexpected error occurred. {$page.error?.message || ''}
     {/if}
   </p>
 
-  <a href="{langPrefix}/" class="btn">{$t('error.return_home')}</a>
+  <a href="/" class="btn">Return Home</a>
 </div>
 
 <style>

@@ -1,46 +1,44 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import { t, locale } from '$lib/i18n';
   import '../app.css';
   import 'prism-themes/themes/prism-one-dark.css';
 
-  export let data: any;
+  let menuOpen = false;
 
-  $: locale.set((data.lang as 'en' | 'uk') || 'en');
-  $: langPrefix = $locale === 'uk' ? '/uk' : '';
+  function toggleMenu() {
+    menuOpen = !menuOpen;
+  }
 
-  function switchLang(newLang: 'en' | 'uk') {
-      const path = $page.url.pathname;
-      let newPath: any = path;
-      if (newLang === 'uk') {
-          if (!path.startsWith('/uk')) {
-              newPath = '/uk' + (path === '/' ? '' : path);
-          }
-      } else {
-          if (path.startsWith('/uk')) {
-              newPath = path.substring(3) || '/';
-          }
-      }
-      // Preserve query params
-      return (newPath + $page.url.search) as any;
+  // Close menu on navigation
+  $: {
+    if ($page.url.pathname) {
+      menuOpen = false;
+    }
   }
 </script>
 
 <div class="layout">
   <header>
     <div class="container navbar">
-      <a href="{langPrefix}/" class="brand">CodeByMe<span class="dot">.de</span></a>
+      <a href="/" class="brand">CodeByMe<span class="dot">.de</span></a>
       
-      <nav>
-        <a href="{langPrefix}/blog?category=TECH">{$t('nav.tech_blog')}</a>
-        <a href="{langPrefix}/blog?category=NON_TECH">{$t('nav.life_blog')}</a>
-        <a href="{langPrefix}/labs">{$t('nav.sysadmin_labs')}</a>
-        
-        <div class="lang-switcher">
-          <a href={switchLang('en')} class:active={$locale === 'en'}>EN</a>
-          <span>|</span>
-          <a href={switchLang('uk')} class:active={$locale === 'uk'}>UK</a>
-        </div>
+      <button class="mobile-menu-btn" on:click={toggleMenu} aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          {#if menuOpen}
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          {:else}
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          {/if}
+        </svg>
+      </button>
+
+      <nav class:open={menuOpen}>
+        <a href="/blog?category=TECH">Tech Blog</a>
+        <a href="/blog?category=NON_TECH">Life Blog</a>
+        <a href="/labs">Labs</a>
       </nav>
     </div>
   </header>
@@ -53,8 +51,8 @@
     <div class="container">
       <p>&copy; 2025 CodeByMe.de | Engineering</p>
       <div class="legal-links">
-        <a href="{langPrefix}/impressum">Impressum</a>
-        <a href="{langPrefix}/datenschutz">Datenschutzerklärung</a>
+        <a href="/impressum">Impressum</a>
+        <a href="/datenschutz">Datenschutzerklärung</a>
       </div>
     </div>
   </footer>
@@ -74,10 +72,14 @@
   nav a { font-size: 0.95rem; font-weight: 600; color: #555; transition: color 0.2s; }
   nav a:hover { color: var(--accent); }
 
-  .lang-switcher { display: flex; gap: 0.5rem; align-items: center; margin-left: 1rem; border-left: 1px solid #ddd; padding-left: 1.5rem; }
-  .lang-switcher a { font-size: 0.85rem; font-weight: 600; color: #999; }
-  .lang-switcher a.active { color: var(--primary); font-weight: 800; }
-  .lang-switcher span { color: #ddd; font-size: 0.85rem; }
+  .mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary);
+    padding: 0.5rem;
+  }
 
   main { flex: 1; padding-top: 3rem; padding-bottom: 3rem; }
 
@@ -85,4 +87,34 @@
   .legal-links { margin-top: 0.5rem; display: flex; justify-content: center; gap: 1rem; }
   .legal-links a { color: #888; transition: color 0.2s; }
   .legal-links a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .mobile-menu-btn {
+      display: block;
+    }
+
+    .navbar {
+      flex-wrap: wrap;
+    }
+
+    nav {
+      display: none;
+      flex-direction: column;
+      width: 100%;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-top: 1px solid var(--border-color);
+      margin-top: 1rem;
+    }
+
+    nav.open {
+      display: flex;
+    }
+
+    nav a {
+      width: 100%;
+      text-align: center;
+      padding: 0.5rem;
+    }
+  }
 </style>
