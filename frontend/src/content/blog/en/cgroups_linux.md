@@ -5,7 +5,7 @@ category: 'TECH'
 tags: ['linux', 'cgroups', 'kernel', 'containers', 'systemd', 'docker', 'kubernetes']
 ---
 
-# Control Groups (cgroups) in Linux: A Deep Technical Reference
+# cgroups - Control Groups in Linux
 
 ## Table of Contents
 
@@ -44,7 +44,7 @@ tags: ['linux', 'cgroups', 'kernel', 'containers', 'systemd', 'docker', 'kuberne
 
 ## What Are cgroups?
 
-**Control Groups** (cgroups) are a Linux kernel feature that organises processes into hierarchical groups and applies resource policies — limits, accounting, and isolation — to each group as a unit. The kernel enforces these policies at runtime, making cgroups the foundational mechanism behind:
+**Control Groups** (hereinafter cgroups) are a Linux kernel feature that organises processes into hierarchical groups and applies resource policies — limits, accounting, and isolation — to each group as a unit. The kernel enforces these policies at runtime, making cgroups the foundational mechanism behind:
 
 - Container runtimes (Docker, Podman, containerd, LXC)
 - Systemd's service and slice management
