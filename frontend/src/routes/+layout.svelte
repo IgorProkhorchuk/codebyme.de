@@ -2,6 +2,8 @@
   import { page } from '$app/stores';
   import '../app.css';
   import 'prism-themes/themes/prism-one-dark.css';
+  import LanguageSwitcher from '$lib/components/LanguageSwitcher.svelte';
+  import { t } from '$lib/i18n';
 
   let menuOpen = false;
 
@@ -36,9 +38,10 @@
       </button>
 
       <nav class:open={menuOpen}>
-        <a href="/blog?category=TECH">Tech Blog</a>
-        <a href="/blog?category=NON_TECH">Life Blog</a>
-        <a href="/labs">Labs</a>
+        <a href="{$page.params.lang === 'uk' ? '/uk' : ''}/blog?category=TECH">{t('techBlog', $page.params.lang)}</a>
+        <a href="{$page.params.lang === 'uk' ? '/uk' : ''}/blog?category=NON_TECH">{t('lifeBlog', $page.params.lang)}</a>
+        <a href="{$page.params.lang === 'uk' ? '/uk' : ''}/labs">{t('labs', $page.params.lang)}</a>
+        <LanguageSwitcher />
       </nav>
     </div>
   </header>
@@ -51,8 +54,8 @@
     <div class="container">
       <p>&copy; 2025 CodeByMe.de | Engineering</p>
       <div class="legal-links">
-        <a href="/impressum">Impressum</a>
-        <a href="/datenschutz">Datenschutzerklärung</a>
+        <a href="{$page.params.lang === 'uk' ? '/uk' : ''}/impressum">{t('impressum', $page.params.lang)}</a>
+        <a href="{$page.params.lang === 'uk' ? '/uk' : ''}/datenschutz">{t('datenschutz', $page.params.lang)}</a>
       </div>
     </div>
   </footer>
