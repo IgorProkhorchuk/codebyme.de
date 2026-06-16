@@ -34,23 +34,28 @@ export function getPosts(lang: string = 'en', postsBySlug: Record<string, Record
 			date: post.metadata?.date || 'Unknown Date',
 			category: post.metadata?.category || 'UNCATEGORIZED',
 			tags: post.metadata?.tags || [],
-			readingTime: post.metadata?.readingTime || '1 min read'
+			readingTime: post.metadata?.readingTime || 1
 		};
 	});
 	return finalPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 export async function getPostBySlug(slug: string, lang: string = 'en'): Promise<{ content: any, meta: any }> {
-	let post;
-	try {
-		post = await import(`../../content/blog/${lang}/${slug}.md`);
-	} catch {
-		try {
-			post = await import(`../../content/blog/en/${slug}.md`);
-		} catch {
-			post = await import(`../../content/blog/uk/${slug}.md`);
-		}
+	const allPosts = import.meta.glob('/src/content/blog/**/*.md');
+	let resolver = allPosts[`/src/content/blog/${lang}/${slug}.md`];
+	
+	if (!resolver) {
+		resolver = allPosts[`/src/content/blog/en/${slug}.md`];
 	}
+	if (!resolver) {
+		resolver = allPosts[`/src/content/blog/uk/${slug}.md`];
+	}
+
+	if (!resolver) {
+		throw new Error(`Post not found: ${slug}`);
+	}
+
+	const post: any = await resolver();
 	return {
 		content: post.default,
 		meta: post.metadata
@@ -70,7 +75,7 @@ export function getAllPostsMultiLang(): Post[] {
 			date: post.metadata?.date || 'Unknown Date',
 			category: post.metadata?.category || 'UNCATEGORIZED',
 			tags: post.metadata?.tags || [],
-			readingTime: post.metadata?.readingTime || '1 min read'
+			readingTime: post.metadata?.readingTime || 1
 		};
 	});
 	return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

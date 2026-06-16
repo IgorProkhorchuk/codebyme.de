@@ -1,6 +1,6 @@
 ---
 title: 'Що таке CORS'
-date: '2025-04-10'
+date: '2026-06-16'
 category: 'TECH'
 tags: ['cors', 'web', 'security', 'spring-boot']
 ---
