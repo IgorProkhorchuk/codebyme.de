@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-	import { t } from '$lib/i18n';
 	export let data;
 
 	let searchQuery = data.currentSearch || '';
@@ -58,7 +56,7 @@
 					<div class="post-meta">
 						<span class="category" data-cat={post.category}>{post.category}</span>
 						<time>{post.date}</time>
-						<span class="reading-time">⏱ {post.readingTime} {t('minRead', $page.params.lang)}</span>
+						<span class="reading-time">⏱ {post.readingTime}</span>
 					</div>
 					<h2>{post.title}</h2>
 					{#if post.tags && post.tags.length > 0}
