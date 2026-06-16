@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import { t } from '$lib/i18n';
 	import Giscus from '$lib/components/Giscus.svelte';
 	
 	export let data: {
@@ -19,12 +17,9 @@
 		const mermaidBlocks = document.querySelectorAll('.language-mermaid');
 		mermaidBlocks.forEach((block: Element) => {
 			const code = block.textContent || '';
-			const state = { code, mermaid: { theme: 'default' } };
-			const jsonStr = JSON.stringify(state);
-			const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
-			const base64url = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+			const base64 = btoa(unescape(encodeURIComponent(code)));
 			
-			block.innerHTML = `<img src="https://mermaid.ink/svg/${base64url}" alt="Mermaid diagram" style="max-width: 100%; height: auto; margin: 0 auto; display: block; border-radius: 8px; padding: 1rem; background: white;" />`;
+			block.innerHTML = `<img src="https://mermaid.ink/svg/${base64}" alt="Mermaid diagram" style="max-width: 100%; height: auto; margin: 0 auto; display: block; border-radius: 8px; padding: 1rem; background: white;" />`;
 			(block as HTMLElement).style.display = 'block';
 			
 			const pre = block.parentElement;
@@ -71,7 +66,7 @@
 			<h1>{data.meta.title}</h1>
 			<div class="meta">
 				<time>{data.meta.date}</time>
-				<span class="reading-time">⏱ {data.meta.readingTime || 1} {t('minRead', $page.params.lang)}</span>
+				<span class="reading-time">⏱ {data.meta.readingTime || '1 min read'}</span>
 				<span class="divider">•</span>
 				<span class="category">{data.meta.category}</span>
 			</div>
