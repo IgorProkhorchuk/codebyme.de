@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
+	import { t } from '$lib/i18n';
 	export let data: any;
 
 	let searchQuery = '';
@@ -7,7 +9,8 @@
 	function handleSearch(e: Event) {
 		e.preventDefault();
 		if (searchQuery.trim()) {
-			goto(`/blog?q=${encodeURIComponent(searchQuery.trim())}`);
+			const prefix = $page.params.lang === 'uk' ? '/uk' : '';
+			goto(`${prefix}/blog?q=${encodeURIComponent(searchQuery.trim())}`);
 		}
 	}
 </script>
@@ -22,31 +25,31 @@
 	<form class="search-form" on:submit={handleSearch}>
 		<input 
 			type="search" 
-			placeholder="Search articles..." 
+			placeholder={t('searchPlaceholder', $page.params.lang)} 
 			bind:value={searchQuery}
 			class="search-input"
 		/>
-		<button type="submit" class="search-btn">Search</button>
+		<button type="submit" class="search-btn">{t('searchButton', $page.params.lang)}</button>
 	</form>
 </section>
 
 <section class="explore-topics">
-	<h2>Popular Topics</h2>
+	<h2>{t('popularTopics', $page.params.lang)}</h2>
 	<div class="tag-cloud">
 		{#each data.tags as tag}
-			<a href="/blog?tag={tag}" class="tag-pill">#{tag}</a>
+			<a href="{$page.params.lang === 'uk' ? '/uk' : ''}/blog?tag={tag}" class="tag-pill">#{tag}</a>
 		{/each}
 	</div>
 </section>
 
 <section class="recent-posts-section">
-	<h2>Recent Posts</h2>
+	<h2>{t('recentPosts', $page.params.lang)}</h2>
 	<div class="posts-list">
 		{#each data.recentPosts as post}
-			<a href="/blog/{post.slug}" class="post-row">
+			<a href="{$page.params.lang === 'uk' ? '/uk' : ''}/blog/{post.slug}" class="post-row">
 				<div class="post-row-left">
 					<time>{post.date}</time>
-					<span class="reading-time">⏱ {post.readingTime}</span>
+					<span class="reading-time">⏱ {post.readingTime} {t('minRead', $page.params.lang)}</span>
 					<h3>{post.title}</h3>
 				</div>
 				<div class="post-row-right">

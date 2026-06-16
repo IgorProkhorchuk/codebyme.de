@@ -1,3 +1,5 @@
+import { getAllPostsMultiLang } from '$lib/server/posts';
+
 export const prerender = true;
 
 const siteName = 'CodeByMe';
@@ -5,17 +7,7 @@ const siteUrl = 'https://codebyme.de';
 const siteDescription = 'Build. Deploy. Document. Thoughts, experiments, and stories from the field.';
 
 export async function GET() {
-	const allPostFiles = import.meta.glob('/src/content/blog/en/**/*.md', { eager: true });
-	
-	const posts = Object.entries(allPostFiles).map(([path, post]: [string, any]) => ({
-		slug: path.split('/').pop()?.replace('.md', ''),
-		title: post.metadata?.title,
-		date: post.metadata?.date,
-		category: post.metadata?.category || 'TECH'
-	}));
-
-	// Sort posts by date, descending
-	posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	const posts = getAllPostsMultiLang();
 
 	const xml = `
 		<?xml version="1.0" encoding="UTF-8" ?>
@@ -25,15 +17,18 @@ export async function GET() {
 				<description>${siteDescription}</description>
 				<link>${siteUrl}</link>
 				<atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
-				${posts.map(post => `
+				${posts.map(post => {
+					const prefix = post.lang === 'en' ? '' : `/${post.lang}`;
+					return `
 					<item>
 						<title><![CDATA[${post.title}]]></title>
-						<link>${siteUrl}/blog/${post.slug}</link>
-						<guid isPermaLink="true">${siteUrl}/blog/${post.slug}</guid>
+						<link>${siteUrl}${prefix}/blog/${post.slug}</link>
+						<guid isPermaLink="true">${siteUrl}${prefix}/blog/${post.slug}</guid>
 						<pubDate>${new Date(post.date).toUTCString()}</pubDate>
 						<category>${post.category}</category>
 					</item>
-				`).join('')}
+					`;
+				}).join('')}
 			</channel>
 		</rss>
 	`.trim();
