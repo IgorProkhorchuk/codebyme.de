@@ -11,6 +11,6 @@ export function remarkReadingTime() {
 			file.data.fm = {};
 		}
 		
-		file.data.fm.readingTime = readingTimeStats.text;
+		file.data.fm.readingTime = Math.ceil(readingTimeStats.minutes);
 	};
 }

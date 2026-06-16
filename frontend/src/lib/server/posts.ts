@@ -8,8 +8,10 @@ export interface Post {
 	lang?: string;
 }
 
+// Single source of truth for all post metadata on the server
+const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
+
 export function getAllPostsRaw(): Record<string, Record<string, any>> {
-	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	const postsBySlug: Record<string, Record<string, any>> = {};
 	
 	for (const [path, post] of Object.entries(allPostFiles)) {
@@ -34,31 +36,13 @@ export function getPosts(lang: string = 'en', postsBySlug: Record<string, Record
 			date: post.metadata?.date || 'Unknown Date',
 			category: post.metadata?.category || 'UNCATEGORIZED',
 			tags: post.metadata?.tags || [],
-			readingTime: post.metadata?.readingTime || '1 min read'
+			readingTime: post.metadata?.readingTime || 1
 		};
 	});
 	return finalPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export async function getPostBySlug(slug: string, lang: string = 'en'): Promise<{ content: any, meta: any }> {
-	let post;
-	try {
-		post = await import(`../../content/blog/${lang}/${slug}.md`);
-	} catch {
-		try {
-			post = await import(`../../content/blog/en/${slug}.md`);
-		} catch {
-			post = await import(`../../content/blog/uk/${slug}.md`);
-		}
-	}
-	return {
-		content: post.default,
-		meta: post.metadata
-	};
-}
-
 export function getAllPostsMultiLang(): Post[] {
-	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	const posts = Object.entries(allPostFiles).map(([path, post]: [string, any]) => {
 		const parts = path.split('/');
 		const fileLang = parts[parts.length - 2];
@@ -70,7 +54,7 @@ export function getAllPostsMultiLang(): Post[] {
 			date: post.metadata?.date || 'Unknown Date',
 			category: post.metadata?.category || 'UNCATEGORIZED',
 			tags: post.metadata?.tags || [],
-			readingTime: post.metadata?.readingTime || '1 min read'
+			readingTime: post.metadata?.readingTime || 1
 		};
 	});
 	return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

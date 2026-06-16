@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getPosts } from './posts';
+import { getPosts, getAllPostsMultiLang } from './posts';
 
 const mockPostsBySlug = {
 	'post-1': {
