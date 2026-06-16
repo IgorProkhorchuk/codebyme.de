@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
-	import { t } from '$lib/i18n';
 	import Giscus from '$lib/components/Giscus.svelte';
 	
 	export let data: {
@@ -68,7 +66,7 @@
 			<h1>{data.meta.title}</h1>
 			<div class="meta">
 				<time>{data.meta.date}</time>
-				<span class="reading-time">⏱ {data.meta.readingTime || 1} {t('minRead', $page.params.lang)}</span>
+				<span class="reading-time">⏱ {data.meta.readingTime || '1 min read'}</span>
 				<span class="divider">•</span>
 				<span class="category">{data.meta.category}</span>
 			</div>
