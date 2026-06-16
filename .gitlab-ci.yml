@@ -42,7 +42,8 @@ test-frontend:
     - cd frontend
     - npm ci
     - npm run check # Runs svelte-check (TypeScript validation)
-    # - npm run test:unit (Uncomment when add unit tests)
+    - npm run test:unit
+    - npm run build # Catch any Vite production bundle errors (like dynamic imports)
 
 # --- Stage 2: Build Native JAR ---
 build-backend-jar:

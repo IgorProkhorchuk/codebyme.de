@@ -8,8 +8,10 @@ export interface Post {
 	lang?: string;
 }
 
+// Single source of truth for all post metadata on the server
+const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
+
 export function getAllPostsRaw(): Record<string, Record<string, any>> {
-	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	const postsBySlug: Record<string, Record<string, any>> = {};
 	
 	for (const [path, post] of Object.entries(allPostFiles)) {
@@ -40,30 +42,7 @@ export function getPosts(lang: string = 'en', postsBySlug: Record<string, Record
 	return finalPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export async function getPostBySlug(slug: string, lang: string = 'en'): Promise<{ content: any, meta: any }> {
-	const allPosts = import.meta.glob('/src/content/blog/**/*.md');
-	let resolver = allPosts[`/src/content/blog/${lang}/${slug}.md`];
-	
-	if (!resolver) {
-		resolver = allPosts[`/src/content/blog/en/${slug}.md`];
-	}
-	if (!resolver) {
-		resolver = allPosts[`/src/content/blog/uk/${slug}.md`];
-	}
-
-	if (!resolver) {
-		throw new Error(`Post not found: ${slug}`);
-	}
-
-	const post: any = await resolver();
-	return {
-		content: post.default,
-		meta: post.metadata
-	};
-}
-
 export function getAllPostsMultiLang(): Post[] {
-	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	const posts = Object.entries(allPostFiles).map(([path, post]: [string, any]) => {
 		const parts = path.split('/');
 		const fileLang = parts[parts.length - 2];
