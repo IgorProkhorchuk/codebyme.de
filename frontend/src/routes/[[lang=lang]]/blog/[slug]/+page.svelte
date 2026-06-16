@@ -19,9 +19,12 @@
 		const mermaidBlocks = document.querySelectorAll('.language-mermaid');
 		mermaidBlocks.forEach((block: Element) => {
 			const code = block.textContent || '';
-			const base64 = btoa(unescape(encodeURIComponent(code)));
+			const state = { code, mermaid: { theme: 'default' } };
+			const jsonStr = JSON.stringify(state);
+			const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+			const base64url = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 			
-			block.innerHTML = `<img src="https://mermaid.ink/svg/${base64}" alt="Mermaid diagram" style="max-width: 100%; height: auto; margin: 0 auto; display: block; border-radius: 8px; padding: 1rem; background: white;" />`;
+			block.innerHTML = `<img src="https://mermaid.ink/svg/${base64url}" alt="Mermaid diagram" style="max-width: 100%; height: auto; margin: 0 auto; display: block; border-radius: 8px; padding: 1rem; background: white;" />`;
 			(block as HTMLElement).style.display = 'block';
 			
 			const pre = block.parentElement;
