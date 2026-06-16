@@ -1,16 +1,24 @@
+import { getAllPostsRaw } from '$lib/server/posts';
+
 export const prerender = true;
 
 const site = 'https://codebyme.de';
+const langs = ['en', 'uk'];
 
 export async function GET() {
-	const allPostFiles = import.meta.glob('/src/content/blog/en/**/*.md', { eager: true });
+	const postsBySlugRaw = getAllPostsRaw();
+	const postsBySlug: Record<string, string> = {};
 	
-	const posts = Object.entries(allPostFiles).map(([path, post]: [string, any]) => ({
-		slug: path.split('/').pop()?.replace('.md', ''),
-		date: post.metadata?.date
-	}));
+	for (const [slug, versions] of Object.entries(postsBySlugRaw)) {
+		for (const post of Object.values(versions)) {
+			if (!postsBySlug[slug] || (post.metadata?.date && post.metadata.date > postsBySlug[slug])) {
+				postsBySlug[slug] = post.metadata?.date || '';
+			}
+		}
+	}
+	
+	const posts = Object.entries(postsBySlug).map(([slug, date]) => ({ slug, date }));
 
-	// Also add static pages
 	const pages = [
 		'',
 		'/blog',
@@ -18,6 +26,35 @@ export async function GET() {
 		'/impressum',
 		'/datenschutz'
 	];
+
+	let urls = '';
+
+	for (const lang of langs) {
+		const prefix = lang === 'en' ? '' : `/${lang}`;
+		for (const page of pages) {
+			urls += `
+				<url>
+					<loc>${site}${prefix}${page}</loc>
+					<changefreq>daily</changefreq>
+					<priority>0.7</priority>
+				</url>
+			`;
+		}
+	}
+
+	for (const lang of langs) {
+		const prefix = lang === 'en' ? '' : `/${lang}`;
+		for (const post of posts) {
+			urls += `
+				<url>
+					<loc>${site}${prefix}/blog/${post.slug}</loc>
+					<lastmod>${post.date}</lastmod>
+					<changefreq>weekly</changefreq>
+					<priority>0.8</priority>
+				</url>
+			`;
+		}
+	}
 
 	const sitemap = `
 		<?xml version="1.0" encoding="UTF-8" ?>
@@ -29,21 +66,7 @@ export async function GET() {
 			xmlns:image="https://www.google.com/schemas/sitemap-image/1.1"
 			xmlns:video="https://www.google.com/schemas/sitemap-video/1.1"
 		>
-			${pages.map(page => `
-				<url>
-					<loc>${site}${page}</loc>
-					<changefreq>daily</changefreq>
-					<priority>0.7</priority>
-				</url>
-			`).join('')}
-			${posts.map(post => `
-				<url>
-					<loc>${site}/blog/${post.slug}</loc>
-					<lastmod>${post.date}</lastmod>
-					<changefreq>weekly</changefreq>
-					<priority>0.8</priority>
-				</url>
-			`).join('')}
+			${urls}
 		</urlset>
 	`.trim();
 
