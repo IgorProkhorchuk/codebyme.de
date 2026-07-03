@@ -3,7 +3,7 @@ export const prerender = true;
 const site = 'https://codebyme.de';
 
 export async function GET() {
-	const allPostFiles = import.meta.glob('/src/content/blog/en/**/*.md', { eager: true });
+	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	
 	const posts = Object.entries(allPostFiles).map(([path, post]: [string, any]) => ({
 		slug: path.split('/').pop()?.replace('.md', ''),
