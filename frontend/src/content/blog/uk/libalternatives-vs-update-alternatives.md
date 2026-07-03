@@ -1,6 +1,6 @@
 ---
 title: '`libalternatives` в openSUSE'
-date: '2025-07-24'
+date: '2026-07-04'
 category: 'TECH'
 tags: ['linux', 'opensuse', 'btrfs']
 ---
