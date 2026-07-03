@@ -37,8 +37,8 @@
   <p>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
   <p>
     Ihor Prokhorchuk<br />
-    Cottbusser Str 82<br />
-    12627 Berlin<br />
+    Großgörschenstraße 8<br />
+    12163 Berlin<br />
     E-Mail: igor@codebyme.de
   </p>
 

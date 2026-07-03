@@ -8,8 +8,8 @@
   <h2>Angaben gemäß § 5 TMG</h2>
   <p>
     Ihor Prokhorchuk<br />
-    Cottbusser Str 82<br />
-    12627 Berlin<br />
+    Großgörschenstraße 8<br />
+    12163 Berlin<br />
     Deutschland
   </p>
 
@@ -21,8 +21,8 @@
   <h2>Redaktionell verantwortlich</h2>
   <p>
     Ihor Prokhorchuk<br />
-    Cottbusser Str 82<br />
-    12627 Berlin
+    Großgörschenstraße 8<br />
+    12163 Berlin
   </p>
 
   <h2>EU-Streitschlichtung</h2>

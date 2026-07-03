@@ -3,7 +3,7 @@ export async function load({ url }) {
 	const tagFilter = url.searchParams.get('tag');
 	const searchFilter = url.searchParams.get('q');
 	
-	const allPostFiles = import.meta.glob('/src/content/blog/en/**/*.md', { eager: true });
+	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	
 	let finalPosts = Object.entries(allPostFiles)
 		.map(([path, post]: [string, any]) => ({
