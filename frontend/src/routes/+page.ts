@@ -1,5 +1,5 @@
 export async function load() {
-	const allPostFiles = import.meta.glob('/src/content/blog/en/**/*.md', { eager: true });
+	const allPostFiles = import.meta.glob('/src/content/blog/**/*.md', { eager: true });
 	
 	const finalPosts = Object.entries(allPostFiles)
 		.map(([path, post]: [string, any]) => ({
