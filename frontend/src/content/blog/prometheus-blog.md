@@ -5,8 +5,6 @@ category: 'TECH'
 tags: ['devops', 'prometheus', 'monitoring']
 ---
 
-# Prometheus: let's try to connect it over one cup of coffee
-
 Prometheus won't save you from crashes, but it will make sure you learn about the problem _before the client does_.
 
 In this article, I will try to describe three ways to run Prometheus: on a regular Linux server, in a Docker container, and connecting it to a Spring Boot application via Actuator.
