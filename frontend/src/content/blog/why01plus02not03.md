@@ -1,7 +1,7 @@
 ---
 title: 'Чому 0.1 + 0.2 не дорівнює 0.3'
 date: '2026-04-04'
-image: '/images/blog/why-01-plus-02-not-03.jpg'
+category: 'TECH'
 color: 'emerald'
 tags: ['computer science', 'programming']
 ---
