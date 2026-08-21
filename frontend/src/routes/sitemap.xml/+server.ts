@@ -14,9 +14,9 @@ export async function GET() {
 	const pages = [
 		'',
 		'/blog',
-		'/labs',
-		'/impressum',
-		'/datenschutz'
+		'/labs'
+		// '/impressum',
+		// '/datenschutz'
 	];
 
 	const sitemap = `

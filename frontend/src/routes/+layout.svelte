@@ -51,8 +51,8 @@
     <div class="container">
       <p>&copy; 2025 CodeByMe.de | Engineering</p>
       <div class="legal-links">
-        <a href="/impressum">Impressum</a>
-        <a href="/datenschutz">Datenschutzerklärung</a>
+        <!-- <a href="/impressum">Impressum</a> -->
+        <!-- <a href="/datenschutz">Datenschutzerklärung</a> -->
       </div>
     </div>
   </footer>
