@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Distrobox'
 date: '2025-03-12'
 category: 'TECH'

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Control Groups (cgroups) in Linux'
 date: '2026-06-09'
 category: 'TECH'

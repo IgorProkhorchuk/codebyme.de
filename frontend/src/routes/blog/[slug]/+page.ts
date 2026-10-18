@@ -1,11 +1,11 @@
 import { error } from '@sveltejs/kit';
 
-export async function load({ params }) {
+export async function load({ params, data }) {
 	try {
 		const post = await import(`../../../content/blog/${params.slug}.md`);
 		return {
 			content: post.default,
-			meta: post.metadata
+			meta: data.meta
 		};
 	} catch (e) {
 		console.error(e);

@@ -1,71 +1,82 @@
 # CodeByMe.de
 
-A personal digital notebook, tech blog, and interactive lab environment built with modern web technologies. The site is designed to be fully bilingual (English / Ukrainian) and uses a Git-based CMS approach where content is driven by simple Markdown files.
+A personal blog built with SvelteKit, TypeScript and mdsvex. Articles live in Git as Markdown; the blog needs neither Spring nor PostgreSQL. `backend/` is an experimental foundation for future interactive Linux Labs. `/labs` currently shows a preparation notice.
 
-## Features
+## Development
 
-- **Tech Blog**: Code snippets, architecture designs, and technical notes. Includes seamless code copying and automatic syntax highlighting.
-- **Life Blog**: Thoughts, hobbies, and life outside the terminal.
-- **SysAdmin Labs (Beta)**: Interactive Linux environments for practicing CLI commands right in the browser.
-- **Bilingual Support**: Fully localized in English and Ukrainian, with a smart fallback system for untranslated articles.
-- **Git-Based CMS**: Articles are written in Markdown (`.md`) and automatically parsed and rendered by SvelteKit via `mdsvex`. Diagrams are rendered natively using Mermaid.
+Use Node.js 22 LTS (20.19+ also supported by Vite 7).
 
-## Tech Stack
-
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Frontend** | **SvelteKit** | SSR, Reactive UI, Markdown Parsing (`mdsvex`), i18n routing. |
-| **Backend** | **Spring Boot** | Core API, Business Logic. |
-| **Language** | **Java / TypeScript** | |
-| **Database** | **PostgreSQL** | Relational data persistence. |
-
-## Local Development
-
-If you want to run the project locally, you can start the frontend development server.
-
-### Prerequisites
-
-- Node.js 20+
-
-### Running the Frontend Locally
-
-1. Navigate to the `frontend` directory:
-   ```bash
-   cd frontend
-   ```
-2. Install the dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-4. Open your browser and navigate to `http://localhost:5173`.
-
-### Running Tests (Frontend)
-
-The frontend includes a suite of unit and component tests using Vitest and Playwright.
-
-To run the tests locally:
-```bash
+```sh
 cd frontend
-npm run test
+npm ci
+npm run dev
 ```
-This will execute all tests, including localized UI component tests and i18n logic checks.
 
-## Content Management
+Before deploying:
 
-Adding a new article to the blog is as simple as creating a Markdown file!
+```sh
+npm run check
+npm run test:unit -- --run --project server
+npm run build
+npm run preview
+```
 
-1. Create a new `.md` file in `frontend/src/content/blog/en/` (for English) or `frontend/src/content/blog/uk/` (for Ukrainian).
-2. Add the required frontmatter at the top of the file:
-   ```yaml
-   ---
-   title: "My New Article"
-   date: "2026-06-05"
-   category: "TECH"
-   ---
-   ```
-3. Write your content in Markdown. The site automatically handles code highlighting and renders Mermaid diagrams!
-4. Commit and push your changes. The CI/CD pipeline will automatically deploy the new article to the live site.
+With preview running, `node scripts/verify-preview.mjs` checks all sitemap URLs, metadata, article languages, search, RSS and Labs against the local build (default port 4173; pass another local origin as the argument if needed).
+
+## Articles and search
+
+Add Markdown files directly to `frontend/src/content/blog/`. The filename is the permanent article slug; keep existing slugs stable for links and Giscus discussions.
+
+```yaml
+---
+title: "My article"
+description: "A concise summary for search engines and article listings."
+date: "2026-10-18"
+lang: en
+category: TECH
+tags: [linux, networking]
+---
+```
+
+Use `lang: uk`, `en` or `de` for the actual article language. This sets the HTML language, without introducing translations or language-specific routes. Add `updated: "YYYY-MM-DD"` only when the article has materially changed; sitemap `lastmod` uses that field. Without a description, a short text excerpt is generated.
+
+Search at `/blog?q=...` covers titles, tags, categories, article bodies and code examples. All query words must match; title and tag matches rank higher. Category and tag filters also apply. The index is built from Markdown on the SvelteKit server; complete article bodies are not sent to the browser as a search index. Content changes require rebuilding and deploying. No external search service or database is needed.
+
+SEO metadata uses `https://codebyme.de` as the canonical domain. Sitemap and RSS are generated during the build, and `robots.txt` advertises the sitemap. Search/filter pages, error pages and the temporary Labs page are excluded from indexing. RSS is available at `/rss.xml`.
+
+## Blog deployment
+
+The normal GitLab pipeline validates types, runs server unit tests and builds SvelteKit before building/pushing the frontend container and deploying it over SSH. It does not build Java or require database credentials.
+
+The existing registry and SSH CI variables are still required: `CI_REGISTRY_USER`, `CI_REGISTRY_PASSWORD`, `CI_REGISTRY`, `CI_REGISTRY_IMAGE` (GitLab provides these), plus `SSH_PRIVATE_KEY`, `SERVER_USER`, `SERVER_IP`. Production Compose image paths are populated from `CI_PROJECT_NAMESPACE` and `CI_PROJECT_NAME` as before.
+
+The first deployment of this configuration explicitly stops and removes the previous backend and PostgreSQL containers, preventing their old `restart: always` policy from starting them after a server reboot. Their named database volume and the server's existing `.env` remain intact; no volume removal command is used. The frontend keeps port `127.0.0.1:8082`, so the existing reverse proxy continues to work.
+
+Local container build:
+
+```sh
+docker compose up -d --build
+```
+
+Production, after substituting the registry variables in `docker-compose.prod.yml`:
+
+```sh
+docker compose -p codebyme pull frontend
+docker compose -p codebyme --profile labs rm -sf backend db
+docker compose -p codebyme up -d --no-deps frontend
+```
+
+## Optional Labs backend
+
+Spring and PostgreSQL are behind the Compose `labs` profile. Normal `docker compose up` starts only the blog. Before experimenting with Labs, set `DB_NAME`, `DB_USER`, `DB_PASS` in a local/server `.env`; no password is supplied by default. Use the original credentials when reusing an existing database volume.
+
+The backend Dockerfile expects a prebuilt Java 25 JAR:
+
+```sh
+cd backend
+./gradlew :app:bootJar
+cd ..
+docker compose --profile labs up -d --build
+```
+
+On Windows, use `gradlew.bat`. Setting `RUN_LABS_PIPELINE=true` in GitLab enables the optional Java tests, JAR build and backend image publishing. It does not enable Labs on production: the regular deploy remains blog-only. Starting the experimental backend is a separate, deliberate server operation.

@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Seo from '$lib/components/Seo.svelte';
 	export let data;
 
 	let searchQuery = data.currentSearch || '';
+	$: searchQuery = data.currentSearch || '';
 
 	function handleSearch(e: Event) {
 		e.preventDefault();
@@ -16,9 +18,9 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{data.currentCategory ? (data.currentCategory.toUpperCase() === 'TECH' ? 'Tech Blog' : 'Life Blog') : 'All Articles'} - CodeByMe</title>
-</svelte:head>
+<Seo title={`${data.currentSearch ? `Search: ${data.currentSearch}` : data.currentTag ? `Articles tagged ${data.currentTag}` : data.currentCategory ? `${data.currentCategory.toUpperCase() === 'TECH' ? 'Tech' : 'Life'} Blog` : 'All Articles'} - CodeByMe`}
+	description="Browse practical articles about Linux, networking and software development. Search across full articles, including commands and examples."
+	path="/blog" noindex={!!(data.currentSearch || data.currentCategory || data.currentTag)} />
 
 <div class="blog-list-container">
 	<header class="page-header">
@@ -34,20 +36,29 @@
 			{/if}
 		</h1>
 		
-		<form class="search-form" on:submit={handleSearch}>
+		<form class="search-form" action="/blog" method="GET" on:submit={handleSearch}>
+			{#if data.currentCategory}<input type="hidden" name="category" value={data.currentCategory} />{/if}
+			{#if data.currentTag}<input type="hidden" name="tag" value={data.currentTag} />{/if}
 			<input 
 				type="search" 
+				name="q"
+				aria-label="Search article titles and full text"
+				maxlength="200"
 				placeholder="Search articles..." 
 				bind:value={searchQuery}
 				class="search-input"
 			/>
 			<button type="submit" class="search-btn">Search</button>
 		</form>
+		<p class="search-help">Search titles, article text and code examples. Use multiple words to narrow results.</p>
+		<p aria-live="polite">{data.posts.length} {data.posts.length === 1 ? 'article' : 'articles'} found</p>
+		{#if data.currentSearch || data.currentCategory || data.currentTag}<a href="/blog">View all articles</a>{/if}
 	</header>
 
 	{#if data.posts.length === 0}
 		<div class="empty-state">
-			<p>No articles found.</p>
+			<p>No articles found. Try fewer words or remove the category and tag filters.</p>
+			<a href="/blog">Browse all articles</a>
 		</div>
 	{:else}
 		<div class="posts-grid">
@@ -59,6 +70,7 @@
 						<span class="reading-time">⏱ {post.readingTime}</span>
 					</div>
 					<h2>{post.title}</h2>
+					<p class="excerpt">{post.excerpt}</p>
 					{#if post.tags && post.tags.length > 0}
 						<div class="tags">
 							{#each post.tags as tag}
@@ -74,6 +86,9 @@
 </div>
 
 <style>
+	.search-help { color: #64748b; font-size: 0.9rem; margin-top: 1rem; }
+	.excerpt { color: #475569; line-height: 1.7; overflow-wrap: anywhere; margin-bottom: 1rem; }
+	@media (max-width: 500px) { .search-input { min-width: 0; } .post-meta { flex-wrap: wrap; gap: 0.5rem; } }
 	.blog-list-container {
 		max-width: 900px;
 		margin: 0 auto;

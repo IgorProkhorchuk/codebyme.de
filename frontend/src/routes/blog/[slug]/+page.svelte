@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import Giscus from '$lib/components/Giscus.svelte';
+	import Seo from '$lib/components/Seo.svelte';
 	
 	export let data: {
 		content: any;
@@ -10,6 +11,8 @@
 			date: string;
 			category: string;
 			readingTime: string;
+			description: string;
+			lang: string;
 		};
 	};
 
@@ -58,11 +61,10 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{data.meta.title} - CodeByMe</title>
-</svelte:head>
+<Seo title={`${data.meta.title} - CodeByMe`} description={data.meta.description}
+	path={$page.url.pathname} article published={data.meta.date} />
 
-<article class="post-container">
+<article class="post-container" lang={data.meta.lang}>
 		<header class="post-header">
 			<h1>{data.meta.title}</h1>
 			<div class="meta">

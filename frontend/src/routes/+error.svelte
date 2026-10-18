@@ -4,6 +4,7 @@
 
 <svelte:head>
   <title>{$page.status} - Error</title>
+  <meta name="robots" content="noindex, follow" />
 </svelte:head>
 
 <div class="error-container">

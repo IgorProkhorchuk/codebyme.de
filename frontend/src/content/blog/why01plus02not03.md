@@ -1,4 +1,5 @@
 ---
+lang: uk
 title: 'Чому 0.1 + 0.2 не дорівнює 0.3'
 date: '2026-04-04'
 category: 'TECH'
