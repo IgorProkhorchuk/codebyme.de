@@ -18,6 +18,8 @@ const config = {
 		vitePreprocess(),
 		mdsvex({
 			extensions: ['.md', '.svx'],
+			// Preserve literal backslashes in code instead of embedding them in JS template literals.
+			highlight: { optimise: false },
 			remarkPlugins: [remarkMath, remarkReadingTime],
 			rehypePlugins: [rehypeKatexSvelte, rehypeSlug]
 		})
