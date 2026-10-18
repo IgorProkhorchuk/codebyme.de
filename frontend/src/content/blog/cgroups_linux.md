@@ -932,7 +932,7 @@ When the page is freed, `mem_cgroup_uncharge()` is called to decrement the count
 
 ## Debugging and Observability
 
-### /proc/<pid>/cgroup
+### /proc/&lt;pid&gt;/cgroup
 
 Shows which cgroup a process belongs to:
 
