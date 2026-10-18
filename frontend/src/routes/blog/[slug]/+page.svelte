@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 	import Giscus from '$lib/components/Giscus.svelte';
 	
 	export let data: {
@@ -76,7 +77,9 @@
 			<svelte:component this={data.content} />
 		</div>
 
-		<Giscus />
+		{#key $page.url.pathname}
+			<Giscus />
+		{/key}
 </article>
 
 <style>

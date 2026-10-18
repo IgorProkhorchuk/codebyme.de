@@ -1,13 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  // These values should be replaced with the ones from https://giscus.app/
-  export let repo = 'IgorProkhorchuk/codebyme';
-  export let repoId = 'R_kgDOMuL5oQ'; // Placeholder - get real one from giscus.app
+  export let repo = 'IgorProkhorchuk/codebyme.de';
+  export let repoId = 'R_kgDOQK8eLA';
   export let category = 'Announcements';
-  export let categoryId = 'DIC_kwDOMuL5oc4Cka1r'; // Placeholder
+  export let categoryId = 'DIC_kwDOQK8eLM4DI4aJ';
   export let mapping = 'pathname';
-  export let strict = '0';
+  export let strict = '1';
   export let reactionsEnabled = '1';
   export let emitMetadata = '0';
   export let inputPosition = 'bottom';
@@ -17,6 +16,9 @@
   let giscusContainer: HTMLDivElement;
 
   onMount(() => {
+    if (!repo || !repoId || !categoryId || !giscusContainer) return;
+
+    const container = giscusContainer;
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
     script.setAttribute('data-repo', repo);
@@ -33,19 +35,18 @@
     script.setAttribute('crossorigin', 'anonymous');
     script.async = true;
 
-    if (giscusContainer) {
-      giscusContainer.appendChild(script);
-    }
+    container.appendChild(script);
+
+    return () => container.replaceChildren();
   });
 </script>
 
+{#if repo && repoId && categoryId}
 <div class="giscus-wrapper">
   <h3>Comments</h3>
-  <p class="giscus-notice">
-    Please ensure Giscus is configured with your correct Repository ID and Category ID at <a href="https://giscus.app/" target="_blank" rel="noopener">giscus.app</a> to enable comments.
-  </p>
   <div bind:this={giscusContainer} class="giscus"></div>
 </div>
+{/if}
 
 <style>
   .giscus-wrapper {
@@ -60,13 +61,4 @@
     color: var(--primary, #1a1a1a);
   }
 
-  .giscus-notice {
-    font-size: 0.9rem;
-    color: #666;
-    background: #f9fafb;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px dashed #ccc;
-    margin-bottom: 2rem;
-  }
 </style>
