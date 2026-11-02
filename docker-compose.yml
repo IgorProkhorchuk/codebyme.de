@@ -1,5 +1,6 @@
 services:
   backend:
+    profiles: [labs]
     build: ./backend
     container_name: codebyme_backend
     restart: unless-stopped
@@ -9,7 +10,7 @@ services:
       - DB_PORT=${DB_PORT:-5432}
       - DB_NAME=${DB_NAME:-codebyme}
       - DB_USER=${DB_USER:-postgres}
-      - DB_PASS=${DB_PASS:-566235}
+      - DB_PASS=${DB_PASS:-}
     ports:
       - "127.0.0.1:8083:8080"
     depends_on:
@@ -22,23 +23,21 @@ services:
     container_name: codebyme_frontend
     restart: unless-stopped
     environment:
-      # This tells SvelteKit's Node adapter where the backend is (Docker DNS name)
       - ORIGIN=https://codebyme.de
     ports:
       - "127.0.0.1:8082:3000" # Host Port 8082 -> Container Port 3000
-    depends_on:
-      - backend
     networks:
       - codebyme_net
 
   db:
+    profiles: [labs]
     image: postgres:16-alpine
     container_name: codebyme_db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-codebyme}
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASS:-566235}
+      POSTGRES_PASSWORD: ${DB_PASS:-}
     volumes:
       - codebyme_db_data:/var/lib/postgresql/data
     networks:

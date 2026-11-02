@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Limit Resources Docker'
 date: '2025-06-06'
 category: 'TECH'

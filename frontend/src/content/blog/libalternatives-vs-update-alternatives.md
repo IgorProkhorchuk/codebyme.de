@@ -1,4 +1,5 @@
 ---
+lang: uk
 title: '`libalternatives` в openSUSE: майбутнє управління альтернативами'
 date: '2026-07-04'
 category: 'TECH'

@@ -1,9 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { afterNavigate } from '$app/navigation';
   import '../app.css';
   import 'prism-themes/themes/prism-one-dark.css';
 
   let menuOpen = false;
+  afterNavigate(() => {
+    document.documentElement.lang = document.querySelector('article.post-container[lang]')?.getAttribute('lang') || 'en';
+  });
 
   function toggleMenu() {
     menuOpen = !menuOpen;
@@ -16,6 +20,10 @@
     }
   }
 </script>
+
+<svelte:head>
+  <link rel="alternate" type="application/rss+xml" title="CodeByMe articles" href="/rss.xml" />
+</svelte:head>
 
 <div class="layout">
   <header>

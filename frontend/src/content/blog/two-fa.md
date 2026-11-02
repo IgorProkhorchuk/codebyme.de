@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Two-factor authentication for SSH access to the server'
 date: '2026-03-05'
 category: 'TECH'

@@ -1,4 +1,5 @@
 ---
+lang: uk
 title: 'try-with-resources Java'
 date: '2026-07-05'
 category: 'TECH'

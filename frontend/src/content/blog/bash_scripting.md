@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Bash Scripting Cheatsheet'
 date: '2026-10-14'
 category: 'TECH'

@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'How to Discover Files from Previous Commits in Git'
 date: '2025-04-10'
 category: 'TECH'

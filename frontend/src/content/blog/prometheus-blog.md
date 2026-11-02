@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Prometheus: how to set it up over a cup of coffee'
 date: '2025-06-05'
 category: 'TECH'

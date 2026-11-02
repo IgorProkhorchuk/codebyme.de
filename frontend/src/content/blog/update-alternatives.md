@@ -1,4 +1,5 @@
 ---
+lang: en
 title: '`update-alternatives` in Linux'
 date: '2025-07-16'
 category: 'TECH'

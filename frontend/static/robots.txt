@@ -1,3 +1,4 @@
 # allow crawling everything by default
 User-agent: *
+Sitemap: https://codebyme.de/sitemap.xml
 Disallow:

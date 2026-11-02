@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Seo from '$lib/components/Seo.svelte';
 	export let data: any;
 
 	let searchQuery = '';
@@ -12,16 +13,16 @@
 	}
 </script>
 
-<svelte:head>
-	<title>CodeByMe.de | Build. Deploy. Document.</title>
-</svelte:head>
+<Seo title="CodeByMe.de | Build. Deploy. Document." description="Practical guides to Linux, networking, containers and software development. Explore articles, commands and lessons from real projects." />
 
 <section class="hero">
 	<h1>Build. Deploy. <span class="highlight">Document.</span></h1>
 	
-	<form class="search-form" on:submit={handleSearch}>
+	<form class="search-form" action="/blog" method="GET" on:submit={handleSearch}>
 		<input 
 			type="search" 
+			name="q"
+			aria-label="Search article titles and full text"
 			placeholder="Search articles..." 
 			bind:value={searchQuery}
 			class="search-input"

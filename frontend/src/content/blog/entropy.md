@@ -1,4 +1,5 @@
 ---
+lang: en
 title: 'Entropy in Computer Science: From Shannon''s Theory to Neural Networks'
 date: '2024-11-23'
 category: 'TECH'
