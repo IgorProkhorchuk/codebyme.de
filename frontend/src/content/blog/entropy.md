@@ -1,6 +1,6 @@
 ---
 lang: en
-title: 'Entropy in Computer Science: From Shannon''s Theory to Neural Networks'
+title: 'Entropy in Computer Science'
 date: '2024-11-23'
 category: 'TECH'
 tags: ['linux', 'security', 'entropy']

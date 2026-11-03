@@ -1,6 +1,6 @@
 ---
 lang: uk
-title: '`libalternatives` в openSUSE: майбутнє управління альтернативами'
+title: '`libalternatives` в openSUSE'
 date: '2026-07-04'
 category: 'TECH'
 tags: ['linux', 'opensuse', 'btrfs', 'alternatives']

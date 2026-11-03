@@ -1,6 +1,6 @@
 ---
 lang: uk
-title: 'JVM Tools Cheatsheet: javap, jimage та інструменти моніторингу'
+title: 'JVM Tools Cheatsheet. javap, jimage та інструменти моніторингу'
 date: '2026-08-14'
 category: 'TECH'
 tags: ['java', 'jvm', 'javatools']
