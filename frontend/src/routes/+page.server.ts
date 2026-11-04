@@ -1,10 +1,14 @@
 import { posts } from '$lib/server/posts';
+import { topics, matchesTopic } from '$lib/topics';
 
 export function load() {
-	const counts = new Map<string, number>();
-	for (const post of posts) for (const tag of post.tags) {
-		const name = tag.toLowerCase();
-		counts.set(name, (counts.get(name) || 0) + 1);
-	}
-	return { recentPosts: posts.slice(0, 5), tags: [...counts].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([tag]) => tag) };
+	const cheatsheets = [
+		['Bash', 'bash_scripting'], ['AWK', 'awk-cheatsheet'], ['grep', 'grep-cheatsheet'],
+		['sed', 'sed-cheatsheet'], ['ripgrep', 'ripgrep-cheatsheet'], ['JVM tools', 'jvm-tools-cheatsheet']
+	].filter(([, slug]) => posts.some(post => post.slug === slug)).map(([title, slug]) => ({ title, slug }));
+	return {
+		recentPosts: posts.slice(0, 5), cheatsheets,
+		topics: topics.map(topic => ({ slug: topic.slug, title: topic.title, description: topic.description,
+			count: posts.filter(post => matchesTopic(post.tags, topic)).length }))
+	};
 }

@@ -6,7 +6,7 @@
 
   let menuOpen = false;
   afterNavigate(() => {
-    document.documentElement.lang = document.querySelector('article.post-container[lang]')?.getAttribute('lang') || 'en';
+    document.documentElement.lang = document.querySelector('[data-page-lang], article.post-container[lang]')?.getAttribute('lang') || 'en';
   });
 
   function toggleMenu() {
@@ -59,8 +59,8 @@
     <div class="container">
       <p>&copy; 2025 CodeByMe.de | Engineering</p>
       <div class="legal-links">
-        <!-- <a href="/impressum">Impressum</a> -->
-        <!-- <a href="/datenschutz">Datenschutzerklärung</a> -->
+        <a href="/impressum">Impressum</a>
+        <a href="/datenschutz">Datenschutzerklärung</a>
       </div>
     </div>
   </footer>

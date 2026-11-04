@@ -1,4 +1,5 @@
 import { markdownToText, excerpt, scoreDocument } from '$lib/search';
+import { topics, matchesTopic } from '$lib/topics';
 
 interface Metadata {
 	title?: string; date?: string; updated?: string; category?: string; tags?: string[];
@@ -23,8 +24,10 @@ const indexed = Object.entries(modules).map(([path, { metadata: meta }]) => {
 export const posts = indexed.map(({ body: _body, ...post }) => post);
 export const getPost = (slug: string) => posts.find(post => post.slug === slug);
 
-export function findPosts(query: string, category: string | null, tag: string | null) {
+export function findPosts(query: string, category: string | null, tag: string | null, topicSlug: string | null = null) {
+	const topic = topics.find(topic => topic.slug === topicSlug);
 	return indexed.filter(post => (!category || post.category.toLowerCase() === category.toLowerCase()) &&
+		(!topicSlug || !!topic && matchesTopic(post.tags, topic)) &&
 		(!tag || post.tags.some(value => value.toLowerCase() === tag.toLowerCase())))
 		.map(post => ({ post, score: scoreDocument(post, query) }))
 		.filter(({ score }) => score >= 0)

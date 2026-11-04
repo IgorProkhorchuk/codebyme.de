@@ -18,15 +18,17 @@
 	}
 </script>
 
-<Seo title={`${data.currentSearch ? `Search: ${data.currentSearch}` : data.currentTag ? `Articles tagged ${data.currentTag}` : data.currentCategory ? `${data.currentCategory.toUpperCase() === 'TECH' ? 'Tech' : 'Life'} Blog` : 'All Articles'} - CodeByMe`}
+<Seo title={`${data.currentSearch ? `Search: ${data.currentSearch}` : data.currentTopic ? data.currentTopic.title : data.currentTag ? `Articles tagged ${data.currentTag}` : data.currentCategory ? `${data.currentCategory.toUpperCase() === 'TECH' ? 'Tech' : 'Life'} Blog` : 'All Articles'} - CodeByMe`}
 	description="Browse practical articles about Linux, networking and software development. Search across full articles, including commands and examples."
-	path="/blog" noindex={!!(data.currentSearch || data.currentCategory || data.currentTag)} />
+	path="/blog" noindex={!!(data.currentSearch || data.currentCategory || data.currentTag || data.currentTopic)} />
 
 <div class="blog-list-container">
 	<header class="page-header">
 		<h1>
 			{#if data.currentSearch}
 				Search: {data.currentSearch}
+			{:else if data.currentTopic}
+				{data.currentTopic.title}
 			{:else if data.currentTag}
 				Tag: #{data.currentTag}
 			{:else if data.currentCategory}
@@ -37,6 +39,7 @@
 		</h1>
 		
 		<form class="search-form" action="/blog" method="GET" on:submit={handleSearch}>
+			{#if data.currentTopic}<input type="hidden" name="topic" value={data.currentTopic.slug} />{/if}
 			{#if data.currentCategory}<input type="hidden" name="category" value={data.currentCategory} />{/if}
 			{#if data.currentTag}<input type="hidden" name="tag" value={data.currentTag} />{/if}
 			<input 
@@ -52,7 +55,7 @@
 		</form>
 		<p class="search-help">Search titles, article text and code examples. Use multiple words to narrow results.</p>
 		<p aria-live="polite">{data.posts.length} {data.posts.length === 1 ? 'article' : 'articles'} found</p>
-		{#if data.currentSearch || data.currentCategory || data.currentTag}<a href="/blog">View all articles</a>{/if}
+		{#if data.currentSearch || data.currentCategory || data.currentTag || data.currentTopic}<a href="/blog">View all articles</a>{/if}
 	</header>
 
 	{#if data.posts.length === 0}
