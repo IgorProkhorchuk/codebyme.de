@@ -115,17 +115,23 @@ if (condition) {
 for (i=1; i<=10; i++) {
     print i
 }
+```
 
+```awk
 # While loop
 while (condition) {
     action
 }
+```
 
+```awk
 # Do-while loop
 do {
     action
 } while (condition)
+```
 
+```awk
 # For-in loop (array iteration)
 for (key in array) {
     print key, array[key]
@@ -162,13 +168,19 @@ for (key in array) {
 ```awk
 # Define array
 array[key] = value
+```
 
+```awk
 # Composite subscripts (joined internally with SUBSEP)
 array[i,j] = value
+```
 
+```awk
 # Delete array element
 delete array[key]
+```
 
+```awk
 # Check if index exists
 if (key in array) { print array[key] }
 ```
@@ -182,13 +194,19 @@ if (key in array) { print array[key] }
 ```bash
 # Print first field of each line
 awk '{print $1}' file.txt
+```
 
+```bash
 # Print first and third fields
 awk '{print $1, $3}' file.txt
+```
 
+```bash
 # Print last field
 awk 'NF {print $NF}' file.txt  # Skip records with no fields
+```
 
+```bash
 # Print line number and first field
 awk '{print NR, $1}' file.txt
 ```
@@ -198,10 +216,14 @@ awk '{print NR, $1}' file.txt
 ```bash
 # Print lines containing "pattern"
 awk '/pattern/' file.txt
+```
 
+```bash
 # Print lines where the third field is greater than 10
 awk '$3 > 10' file.txt
+```
 
+```bash
 # Print lines that don't start with a #
 awk '!/^#/' file.txt
 ```
@@ -211,7 +233,9 @@ awk '!/^#/' file.txt
 ```bash
 # Use : as field separator
 awk -F: '{print $1}' /etc/passwd
+```
 
+```bash
 # Change output field separator
 awk 'BEGIN {OFS=","} {print $1, $2}' file.txt
 ```
@@ -221,10 +245,14 @@ awk 'BEGIN {OFS=","} {print $1, $2}' file.txt
 ```bash
 # Sum the values in the first column
 awk '{sum += $1} END {print sum + 0}' file.txt
+```
 
+```bash
 # Calculate average of first column
 awk 'NF {sum += $1; count++} END {if (count) print sum/count; else print "No data"}' file.txt
+```
 
+```bash
 # Find minimum and maximum values
 awk 'NF {
          value = $1 + 0
@@ -241,10 +269,14 @@ These calculations assume numeric values in column 1 and no header. `NF` skips b
 ```bash
 # Convert to uppercase
 awk '{print toupper($0)}' file.txt
+```
 
+```bash
 # Print line length
 awk '{print length($0)}' file.txt
+```
 
+```bash
 # Replace text
 awk '{gsub(/foo/, "bar"); print}' file.txt
 ```
@@ -255,14 +287,20 @@ awk '{gsub(/foo/, "bar"); print}' file.txt
 # Count occurrences of each word
 awk '{for(i=1;i<=NF;i++) count[$i]++}
      END {for(word in count) print word, count[word]}' file.txt
+```
 
+```bash
 # Print lines between "START" and "END" patterns
 awk '/START/,/END/' file.txt
+```
 
+```bash
 # Remove duplicate lines globally, keeping the first occurrence
 # uniq only removes adjacent duplicates unless input has first been grouped
 awk '!seen[$0]++' file.txt
+```
 
+```bash
 # Print every Nth line
 awk 'NR % 5 == 0' file.txt  # Every 5th line
 ```
@@ -330,7 +368,9 @@ alice books 5
 ```bash
 awk '$2 == "books" {total += $3} END {print total + 0}' sales.txt
 # Output: 17
+```
 
+```bash
 awk '{total[$1] += $3} END {for (name in total) print name, total[name]}' sales.txt
 # alice 17 and bob 8 (iteration order is unspecified)
 ```
@@ -350,10 +390,14 @@ Assigning a field rebuilds `$0` with `OFS`. Assigning `OFS` alone does not repla
 ```bash
 # Skip the first record of each input file
 awk 'FNR > 1' first.txt second.txt
+```
 
+```bash
 # Pass a threshold without embedding shell data in AWK source
 awk -v threshold=10 '$3 + 0 > threshold' sales.txt
+```
 
+```bash
 # First file: user_id name; second file: user_id amount (no headers)
 # The FILENAME test also handles an empty first file
 awk 'FILENAME == ARGV[1] {name[$1]=$2; next} $1 in name {print name[$1], $2}' users.txt amounts.txt
@@ -377,7 +421,9 @@ Use `LC_ALL=C awk ...` when byte-oriented processing and predictable locale beha
 ```bash
 # Empty RS groups nonempty lines into paragraph records
 awk 'BEGIN {RS=""; ORS="\n\n"} /ERROR/' report.txt
+```
 
+```bash
 # Simple comma-delimited input without quoting or embedded commas/newlines
 awk -F, 'BEGIN {OFS=","} {print $1, $3}' simple.csv
 ```

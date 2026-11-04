@@ -45,11 +45,15 @@ error lowercase
 grep 'ERROR' app.log
 # ERROR timeout user=bob code=504
 # ERROR disk full user=alice code=507
+```
 
+```bash
 grep -n 'ERROR' app.log
 # 3:ERROR timeout user=bob code=504
 # 5:ERROR disk full user=alice code=507
+```
 
+```bash
 printf 'alpha\nbeta\nalphabet\n' | grep 'alpha'
 # alpha
 # alphabet
@@ -88,14 +92,20 @@ printf 'alpha\nbeta\nalphabet\n' | grep 'alpha'
 printf 'a.b\naXb\n' | grep 'a.b'
 # a.b
 # aXb
+```
 
+```bash
 printf 'a.b\naXb\n' | grep -F 'a.b'
 # a.b
+```
 
+```bash
 printf 'cat\nconcatenate\ncat_1\ncat-like\n' | grep -w 'cat'
 # cat
 # cat-like
+```
 
+```bash
 printf 'cat\ncat-like\n' | grep -x 'cat'
 # cat
 ```
@@ -138,12 +148,16 @@ Use actual characters inside bracket expressions: `[]` and `[^]` are not valid e
 printf 'ERROR\nWARN\nINFO\n' | grep -E 'ERROR|WARN'
 # ERROR
 # WARN
+```
 
+```bash
 # Grouping, repetition, and a fully anchored shape check
 printf 'req-17\nreq-001\nrequest-7\n' | grep -E '^req-[0-9]{2,3}$'
 # req-17
 # req-001
+```
 
+```bash
 # GNU BRE alternative and ERE backreference examples
 printf 'foo\nbar\nbaz\n' | grep 'foo\|bar'
 printf 'cat cat\ncat dog\n' | grep -E '^(cat) \1$'
@@ -165,7 +179,9 @@ printf 'cat cat\ncat dog\n' | grep -E '^(cat) \1$'
 ```bash
 printf 'user_17\nuser-name\n123\n' | LC_ALL=C grep -E '^[[:alpha:]_][[:alnum:]_]*$'
 # user_17
+```
 
+```bash
 # In the C locale, the range is an ASCII digit check
 printf 'code=504\ncode=oops\n' | LC_ALL=C grep -E '^code=[0-9]{3}$'
 # code=504
@@ -214,18 +230,26 @@ There is **no GNU grep `--include-dir` option**. Choose the starting directories
 ```bash
 # OR: either severity (ERE)
 grep -E 'ERROR|WARN' app.log
+```
 
+```bash
 # OR without regex alternation; -F makes both patterns literal
 grep -F -e 'ERROR' -e 'WARN' app.log
+```
 
+```bash
 # AND: both literal strings on the SAME line, in any order
 # -h keeps a filename prefix from accidentally satisfying the second filter
 grep -hF 'ERROR' app.log | grep -F 'user=alice'
 # ERROR disk full user=alice code=507
+```
 
+```bash
 # NOT: discard lines containing either excluded string
 grep -Fv -e 'DEBUG' -e 'healthcheck' app.log
+```
 
+```bash
 # AND + NOT
 grep -hF 'ERROR' app.log | grep -Fv 'timeout'
 # ERROR disk full user=alice code=507
@@ -239,14 +263,18 @@ Repeated `-e` patterns mean OR, not AND. For multi-file AND searches, suppress p
 grep -oE 'code=[0-9]+' app.log
 # code=504
 # code=507
+```
 
+```bash
 # GNU PCRE: extract values without the key
 grep -oP '(?<=user=)[[:alnum:]_]+' app.log
 # alice
 # bob
 # alice
 # alice
+```
 
+```bash
 # GNU PCRE: fixed-length lookbehind plus a digit lookahead
 printf 'prefixpattern7\nprefixother7\n' | grep -oP '(?<=prefix)pattern(?=[0-9])'
 # pattern
@@ -260,14 +288,20 @@ printf 'prefixpattern7\nprefixother7\n' | grep -oP '(?<=prefix)pattern(?=[0-9])'
 printf 'ERROR ERROR\nOK\nERROR\n' > counts.log
 grep -c 'ERROR' counts.log
 # 2
+```
 
+```bash
 grep -o 'ERROR' counts.log | wc -l
 # 3
+```
 
+```bash
 # Count nonmatching lines instead
 grep -vc 'ERROR' counts.log
 # 1
+```
 
+```bash
 # Stop after two selected lines in EACH input file
 grep -m 2 'ERROR' app.log
 ```
@@ -278,9 +312,17 @@ grep -m 2 'ERROR' app.log
 
 ```bash
 grep -A 3 'ERROR' app.log   # Three lines after each match
-grep -B 2 'ERROR' app.log   # Two before
-grep -C 1 'ERROR' app.log   # One on each side
+```
 
+```bash
+grep -B 2 'ERROR' app.log   # Two before
+```
+
+```bash
+grep -C 1 'ERROR' app.log   # One on each side
+```
+
+```bash
 # Line-number prefixes: ':' for matches, '-' for context
 seq 1 9 | grep -n -C 1 -E '^[26]$'
 # 1-1
@@ -290,7 +332,9 @@ seq 1 9 | grep -n -C 1 -E '^[26]$'
 # 5-5
 # 6:6
 # 7-7
+```
 
+```bash
 # GNU: replace or suppress separators BETWEEN nonadjacent context groups
 seq 1 9 | grep -C 1 --group-separator='====' -E '^[26]$'
 seq 1 9 | grep -C 1 --no-group-separator -E '^[26]$'
@@ -305,17 +349,25 @@ Overlapping context windows are merged rather than printing the same line twice.
 ```bash
 # GNU: line numbers, filenames, no detected binary files
 grep -rInH -F 'TODO' ./project
+```
 
+```bash
 # Restrict to Python files; quote the glob so Bash does not expand it
 grep -rInH --include='*.py' 'function' ./project
+```
 
+```bash
 # Several filename types; repeated --include filters select either suffix
 grep -rInH --include='*.java' --include='*.kt' -F 'TODO' ./project
+```
 
+```bash
 # Skip generated/vendor trees and logs
 grep -rInH --exclude='*.log' --exclude-dir=.git \
   --exclude-dir=node_modules --exclude-dir=build -F 'TODO' ./project
+```
 
+```bash
 # More than one explicit starting subtree
 grep -rInH -F 'TODO' ./project/src ./project/scripts
 ```
@@ -329,11 +381,15 @@ GNU grep does not automatically respect `.gitignore`; hidden files/directories a
 ```bash
 # Matching regular files anywhere below configs; names are passed as arguments
 find ./configs -type f -name '*.conf' -exec grep -nH -F 'timeout=' {} +
+```
 
+```bash
 # Select a subtree by path, rather than inventing --include-dir
 find ./project -type f -path '*/src/*' -name '*.java' \
   -exec grep -nH -F 'TODO' {} +
+```
 
+```bash
 # Prune an entire subtree before selecting regular files
 find ./project -type d -name vendor -prune -o \
   -type f -name '*.txt' -exec grep -nH -F 'needle' {} +
@@ -358,7 +414,9 @@ git grep -n -F 'TODO' -- '*.java' '*.kt'
 ```bash
 # stdout only: stderr still goes to the terminal
 printf 'ready\nERROR failed\n' | grep 'ERROR'
+```
 
+```bash
 # Bash: combine stderr with stdout before filtering
 { printf 'ready\n'; printf 'ERROR failed\n' >&2; } 2>&1 | grep 'ERROR'
 # ERROR failed
@@ -371,7 +429,9 @@ printf 'ready\nERROR failed\n' | grep 'ERROR'
 ```bash
 # Runs until interrupted; tail starts with newly appended lines
 tail -n 0 -F app.log | grep --line-buffered -E 'ERROR|WARN'
+```
 
+```bash
 # Two live filters: keep the FIRST grep line-buffered too
 tail -n 0 -F app.log |
   grep --line-buffered -F 'ERROR' |
@@ -385,11 +445,15 @@ GNU `tail -F` follows the named file across log rotations. `--line-buffered` flu
 ```bash
 # zgrep is a gzip companion wrapper, not GNU grep's built-in decompression
 zgrep -n 'ERROR' archive.log.gz
+```
 
+```bash
 # Decompress explicitly; label stdin so output still identifies the source
 # GNU grep --label works with -H
 gzip -cd -- archive.log.gz | grep -nH --label=archive.log -F 'ERROR'
+```
 
+```bash
 # Stream a decompressed archive through several literal filters
 gzip -cd -- archive.log.gz | grep -F 'ERROR' | grep -Fv 'healthcheck'
 ```
@@ -401,16 +465,24 @@ Check decompressor failures as well as grep's result when scripting. A successfu
 ```bash
 # Interactive Bash history; history output depends on that shell session
 history | grep -F 'docker'
+```
 
+```bash
 # Search process arguments; the bracket trick avoids matching this grep command
 ps aux | grep '[j]ava'
+```
 
+```bash
 # A dedicated process query is often easier when PIDs are the goal
 pgrep -af 'java'
+```
 
+```bash
 # Kernel output: access depends on system policy
 dmesg | grep -i 'error'
+```
 
+```bash
 # journalctl can provide logs, then grep filters their text
 journalctl -u example.service --no-pager | grep -i 'timeout'
 ```
@@ -427,7 +499,9 @@ grep -oE 'user=[[:alnum:]_]+' app.log |
   sed 's/^user=//' |
   LC_ALL=C sort | uniq -c | sort -nr
 # Counts: alice 3, bob 1 (uniq output includes padding)
+```
 
+```bash
 # Extract IPv4-shaped text from an independent sample
 printf 'client=192.0.2.10 backup=198.51.100.7\n' |
   grep -oE '([0-9]{1,3}[.]){3}[0-9]{1,3}'
@@ -467,7 +541,9 @@ printf 'bob\ncarol\n' > allowed.txt
 grep -Fxf allowed.txt users.txt
 # bob
 # carol
+```
 
+```bash
 # Difference: user records absent from the allowed list
 grep -Fvxf allowed.txt users.txt
 # alice
@@ -494,8 +570,13 @@ Pattern files contain patterns, not comments: a `#` line is a search pattern too
 ```bash
 # GNU: filenames containing ERROR, or filenames with no ERROR line
 grep -rlI -F 'ERROR' ./logs
-grep -rLI -F 'ERROR' ./logs
+```
 
+```bash
+grep -rLI -F 'ERROR' ./logs
+```
+
+```bash
 # GNU: emit matching filenames followed by NUL, then read them safely in Bash
 # The loop operates on filenames, not grep's colon-prefixed result text
 while IFS= read -r -d '' path; do
@@ -513,7 +594,9 @@ The process-substitution loop above is an interactive reporting recipe; it does 
 printf '%s\n' '-Ddebug' 'normal' > build.log
 grep -n -e '-Ddebug' -- build.log
 # 1:-Ddebug
+```
 
+```bash
 # -- ends option parsing; ./ also makes the operand unambiguous
 printf 'needle\n' > ./-notes.txt
 grep -n -F -e 'needle' -- ./-notes.txt
@@ -529,7 +612,9 @@ printf 'header\0ERROR payload\n' > payload.bin
 
 # GNU: force text treatment; inspect the bytes rather than rendering control data
 grep -a -F 'ERROR' payload.bin | od -An -tx1
+```
 
+```bash
 # GNU: skip detected binary files during a recursive text search
 grep -rInH -F 'ERROR' ./logs
 ```
@@ -547,7 +632,9 @@ GNU grep may report a binary-file match instead of printing the matching line wh
 # Two NUL-terminated records; output the one containing beta
 printf 'alpha\0beta\0' | grep -zF 'beta' | od -An -tx1
 # 62 65 74 61 00 (beta followed by NUL)
+```
 
+```bash
 # GNU PCRE: match ACROSS an embedded newline in one NUL-delimited record
 printf 'BEGIN\nsecret\nEND\n' | grep -zPo '(?s)BEGIN.*?END' | od -An -tc
 # BEGIN, newline, secret, newline, END, then NUL
@@ -693,12 +780,16 @@ fi
 printf 'ERROR\r\n' > windows.log
 sed -n 'l' windows.log
 # ERROR\r$
+```
 
+```bash
 # Literal whole-line matching including an optional final carriage return
 # Bash ANSI-C quoting provides an actual CR to the regex
 grep -nE $'^ERROR\r?$' windows.log
 # 1:ERROR followed by the original carriage return
+```
 
+```bash
 # A match limit is per file, not a global output limit
 grep -m 1 -H 'ERROR' app.log counts.log
 ```

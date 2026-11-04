@@ -23,20 +23,33 @@ Related: [AWK fundamentals](/blog/awk-cheatsheet), [advanced AWK](/blog/awk-chea
 ```bash
 # Current date: YYYY-MM-DD
 gawk 'BEGIN {print strftime("%Y-%m-%d")}'
+```
 
+```bash
 # Current local date/time, with offset
 gawk 'BEGIN {print strftime("%Y-%m-%d %H:%M:%S %z")}'
+```
 
+```bash
 # Current Unix timestamp (seconds since 1970-01-01 UTC)
 gawk 'BEGIN {print systime()}'
+```
 
+```bash
 # Weekday and month names (localized)
 gawk 'BEGIN {print strftime("%A")}'
-gawk 'BEGIN {print strftime("%B")}'
+```
 
+```bash
+gawk 'BEGIN {print strftime("%B")}'
+```
+
+```bash
 # ISO week number, then ISO week-year + week (use %G, not %Y)
 gawk 'BEGIN {print strftime("%V"); print strftime("%G-W%V")}'
+```
 
+```bash
 # Day of year (001-366)
 gawk 'BEGIN {print strftime("%j")}'
 ```
@@ -46,21 +59,31 @@ gawk 'BEGIN {print strftime("%j")}'
 ```bash
 # Unix timestamp to local date/time
 gawk 'BEGIN {print strftime("%Y-%m-%d %H:%M:%S %z", 1672531200)}'
+```
 
+```bash
 # The same timestamp in UTC
 gawk 'BEGIN {print strftime("%Y-%m-%dT%H:%M:%SZ", 1672531200, 1)}'
 # Output: 2023-01-01T00:00:00Z
+```
 
+```bash
 # YYYY-MM-DD to timestamp at local midnight
 gawk 'BEGIN {split("2023-07-15",d,"-"); print mktime(d[1]" "d[2]" "d[3]" 0 0 0")}'
+```
 
+```bash
 # The same date at UTC midnight
 gawk 'BEGIN {print mktime("2023 07 15 00 00 00", 1)}'
 # Output: 1689379200
+```
 
+```bash
 # MM/DD/YYYY to YYYY-MM-DD (one valid date per line)
 gawk -F/ '{printf "%04d-%02d-%02d\n", $3, $1, $2}' dates.txt
+```
 
+```bash
 # YYYY-MM-DD to DD/MM/YYYY
 gawk -F- '{printf "%02d/%02d/%04d\n", $3, $2, $1}' dates.txt
 ```
@@ -70,19 +93,29 @@ gawk -F- '{printf "%02d/%02d/%04d\n", $3, $2, $1}' dates.txt
 ```bash
 # Date after exactly 24 elapsed hours; local display may cross DST
 gawk 'BEGIN {print strftime("%Y-%m-%d", systime()+86400)}'
+```
 
+```bash
 # Date exactly 168 elapsed hours ago
 gawk 'BEGIN {print strftime("%Y-%m-%d", systime()-7*86400)}'
+```
 
+```bash
 # Tomorrow's local calendar date: increment the day component
 gawk 'BEGIN {split(strftime("%Y %m %d"),d); print strftime("%F",mktime(d[1]" "d[2]" "(d[3]+1)" 12 0 0"))}'
+```
 
+```bash
 # Yesterday's local calendar date
 gawk 'BEGIN {split(strftime("%Y %m %d"),d); print strftime("%F",mktime(d[1]" "d[2]" "(d[3]-1)" 12 0 0"))}'
+```
 
+```bash
 # Date exactly 30*24 elapsed hours ago
 gawk 'BEGIN {print strftime("%Y-%m-%d", systime()-30*86400)}'
+```
 
+```bash
 # Calendar date 30 days ago
 gawk 'BEGIN {split(strftime("%Y %m %d"),d); print strftime("%F",mktime(d[1]" "d[2]" "(d[3]-30)" 12 0 0"))}'
 ```
@@ -100,14 +133,20 @@ Apache examples assume Common/Combined Log Format, for example:
 ```bash
 # Apache: filter a specific date in the timestamp field
 gawk '$4 ~ /^\[15\/Jul\/2023:/' access.log
+```
 
+```bash
 # Apache: count by date, hour and recorded offset (keeps DST folds distinct)
 gawk '{split($4,t,":"); key=substr(t[1],2)":"t[2]" "substr($5,1,length($5)-1); count[key]++} END {for(h in count) print h,count[h]}' access.log
 # For the sample: 15/Jul/2023:14 +0000 1
+```
 
+```bash
 # Local log: render YYYY-MM-DD HH:MM:SS as a readable date, retaining the record
 LC_ALL=C gawk '{text=$1" "$2; gsub(/[-:]/," ",text); ts=mktime(text); if(ts != -1) print strftime("%a %b %d %Y",ts),$0}' logfile.txt
+```
 
+```bash
 # Local log: entries in [now-3600, now], preserving the original record
 gawk 'BEGIN {now=systime()} {text=$1" "$2; gsub(/[-:]/," ",text); ts=mktime(text); if(ts != -1 && ts>=now-3600 && ts<=now) print}' logfile.txt
 ```
@@ -119,13 +158,19 @@ Set `TZ` to the local log's zone, for example `TZ=Europe/Berlin gawk ...`. The A
 ```bash
 # HH:MM:SS in field 2: extract the hour
 gawk '{split($2,t,":"); print t[1]}' logfile.txt
+```
 
+```bash
 # HH:MM:SS in field 1: [09:00:00, 17:00:00), across all input dates
 gawk '$1 ~ /^[0-9]{2}:[0-9]{2}:[0-9]{2}$/ && $1>="09:00:00" && $1<"17:00:00"' times.log
+```
 
+```bash
 # YYYY-MM-DD in field 1: count by date
 gawk '{count[$1]++} END {for(d in count) print d,count[d]}' logfile.txt
+```
 
+```bash
 # Two HH:MM:SS fields on the SAME day: elapsed seconds
 gawk '{split($1,a,":"); split($2,b,":"); print (b[1]*3600+b[2]*60+b[3])-(a[1]*3600+a[2]*60+a[3])}' times.txt
 ```
@@ -137,16 +182,24 @@ The clock-only difference can be negative across midnight. If the contract guara
 ```bash
 # Date-only entries strictly after the specified date
 gawk '$1 > "2023-07-15"' dates.txt
+```
 
+```bash
 # The same comparison using local-midnight timestamps
 gawk 'BEGIN {target=mktime("2023 07 15 00 00 00")} {split($1,d,"-"); ts=mktime(d[1]" "d[2]" "d[3]" 0 0 0"); if(ts != -1 && ts>target) print}' dates.txt
+```
 
+```bash
 # Weekend in the process time zone (ISO Monday=1)
 gawk 'BEGIN {print (strftime("%u")+0>5 ? "Weekend" : "Weekday")}'
+```
 
+```bash
 # Date-only entries before today; today itself is excluded
 gawk 'BEGIN {today=strftime("%F")} $1<today {print "Past date:",$0}' dates.txt
+```
 
+```bash
 # Date-only entries after today
 gawk 'BEGIN {today=strftime("%F")} $1>today {print "Future date:",$0}' dates.txt
 ```
@@ -160,13 +213,19 @@ Input contracts: `people.txt` contains `Name YYYY-MM-DD`; `timestamps.txt` conta
 ```bash
 # Age by calendar birthday, not by dividing seconds by 365 days
 gawk 'BEGIN {split(strftime("%Y %m %d"),t)} {split($2,b,"-"); age=t[1]-b[1]; if(t[2]+0<b[2]+0 || (t[2]+0==b[2]+0 && t[3]+0<b[3]+0)) age--; print $1,"is",age,"years old"}' people.txt
+```
 
+```bash
 # Nonnegative duration as cumulative HH:MM:SS
 gawk '{diff=$2-$1; if(diff<0) next; printf "%02d:%02d:%02d\n",int(diff/3600),int(diff%3600/60),diff%60}' timestamps.txt
+```
 
+```bash
 # Batch snapshot of local log entries within the last minute; rerun to refresh
 gawk 'BEGIN {now=systime()} {text=$1" "$2; gsub(/[-:]/," ",text); ts=mktime(text); if(ts != -1 && ts>=now-60 && ts<=now) print}' logfile.txt
+```
 
+```bash
 # Mean response time by clock hour, combining all dates
 gawk '{split($1,t,":"); h=t[1]; sum[h]+=$2; count[h]++} END {for(h in sum) printf "Hour %s: avg %.2f ms\n",h,sum[h]/count[h]}' response_times.txt
 ```
@@ -182,13 +241,19 @@ tail -n 0 -F events.log | gawk '{now=systime(); if($1>=now-60 && $1<=now) {print
 ```bash
 # UTC without changing the process zone
 gawk 'BEGIN {print strftime("%Y-%m-%dT%H:%M:%SZ",systime(),1)}'
+```
 
+```bash
 # New York regional time: EST or EDT depending on the date
 TZ=America/New_York gawk 'BEGIN {print strftime("%F %T %Z %z")}'
+```
 
+```bash
 # Same instant in UTC and the process's original local zone
 gawk -v ts=1672531200 'BEGIN {print "UTC:",strftime("%F %T",ts,1); print "Local:",strftime("%F %T %Z %z",ts)}'
+```
 
+```bash
 # Interpret Berlin wall-clock input, then display UTC
 TZ=Europe/Berlin gawk 'BEGIN {ts=mktime("2023 07 15 14 30 00"); print strftime("%Y-%m-%dT%H:%M:%SZ",ts,1)}'
 # Output: 2023-07-15T12:30:00Z
@@ -202,13 +267,19 @@ Do not use `ENVIRON["TZ"]=""` to restore the original zone. Preserve the origina
 # Apache CLF/Combined: requests and mean bytes per date/hour/offset
 # $10 is body bytes; Apache '-' is treated as 0
 gawk '{split($4,t,":"); h=substr(t[1],2)":"t[2]" "substr($5,1,length($5)-1); bytes[h]+=($10=="-"?0:$10); count[h]++} END {for(h in count) printf "%s: %d requests, %.2f KiB avg\n",h,count[h],bytes[h]/count[h]/1024}' access.log
+```
 
+```bash
 # Daily error counts: YYYY-MM-DD in field 1
 gawk '/ERROR/ {errors[$1]++} END {for(d in errors) print d,errors[d],"errors"}' app.log
+```
 
+```bash
 # Events per second: YYYY-MM-DD HH:MM:SS message (do not merge every :30)
 gawk '{count[$1" "$2]++} END {for(s in count) print s,count[s],"events"}' highload.log
+```
 
+```bash
 # Whole seven-day periods elapsed since the epoch, not ISO calendar weeks
 gawk 'BEGIN {print "Seven-day bucket since Unix epoch:",int(systime()/604800)}'
 ```
@@ -223,11 +294,15 @@ These recipes use **simple comma-delimited input**: no quoted input fields, embe
 # Four fields; field 3 is YYYY-MM-DDTHH:MM:SS without an offset
 # Format its date portion in English and quote the generated field containing a comma
 LC_ALL=C TZ=UTC0 gawk -F, '{split($3,dt,"T"); gsub(/-/," ",dt[1]); ts=mktime(dt[1]" 0 0 0",1); printf "%s,%s,\"%s\",%s\n",$1,$2,strftime("%B %d, %Y",ts,1),$4}' data.csv
+```
 
+```bash
 # Field 1: YYYY-MM-DD HH:MM:SS, ordered chronologically in one process zone
 # Average gap between consecutive events; needs at least two valid events
 gawk -F, '{text=$1; gsub(/[-:]/," ",text); ts=mktime(text); if(ts == -1) next; if(have) {sum+=ts-prev; count++} prev=ts; have=1} END {if(count) print "Average time between events:",sum/count,"seconds"; else print "Need at least two events"}' events.csv
+```
 
+```bash
 # Field 2: valid birthdate YYYY-MM-DD; append calendar age
 # Same February 29 convention as the age recipe above
 gawk -F, 'BEGIN {OFS=","; split(strftime("%Y %m %d"),t)} {split($2,b,"-"); age=t[1]-b[1]; if(t[2]+0<b[2]+0 || (t[2]+0==b[2]+0 && t[3]+0<b[3]+0)) age--; print $0,age}' people.csv
@@ -241,19 +316,27 @@ Example conversion: `42,alice,2023-07-15T14:30:00,ok` becomes `42,alice,"July 15
 # Seconds to cumulative HH:MM:SS
 gawk -v s=3661 'BEGIN {printf "%02d:%02d:%02d\n",int(s/3600),int(s%3600/60),s%60}'
 # Output: 01:01:01
+```
 
+```bash
 # YYYY-MM-DD to timestamp and weekday (Bash here-string)
 LC_ALL=C gawk -F- '{ts=mktime($1" "$2" "$3" 0 0 0",1); print ts; print strftime("%A",ts,1)}' <<< '2023-07-15'
 # Output: 1689379200, then Saturday
+```
 
+```bash
 # Nonnegative Unix milliseconds to UTC; preserve milliseconds explicitly
 gawk -v ms=1626345600123 'BEGIN {printf "%s.%03dZ\n",strftime("%Y-%m-%dT%H:%M:%S",int(ms/1000),1),ms%1000}'
 # Output: 2021-07-15T10:40:00.123Z
+```
 
+```bash
 # 24-hour HH:MM to 12-hour HH:MM AM/PM (valid hours 00-23)
 gawk -F: '{printf "%02d:%s %s\n",($1%12 ? $1%12 : 12),$2,($1+0>=12 ? "PM" : "AM")}' <<< '12:30'
 # Output: 12:30 PM; 00:30 becomes 12:30 AM
+```
 
+```bash
 # 12-hour HH:MM AM/PM to 24-hour time (valid hours 01-12)
 gawk -F'[: ]+' '{printf "%02d:%02d\n",$1%12+(toupper($3)=="PM" ? 12 : 0),$2}' <<< '12:30 AM'
 # Output: 00:30
@@ -264,15 +347,21 @@ gawk -F'[: ]+' '{printf "%02d:%02d\n",$1%12+(toupper($3)=="PM" ? 12 : 0),$2}' <<
 ```bash
 # Zone abbreviation and numeric offset NOW
 gawk 'BEGIN {print strftime("%Z"); print strftime("%z")}'
+```
 
+```bash
 # Compare January and July offsets in a named zone (minutes, including half-hours)
 TZ=Australia/Lord_Howe gawk 'function minutes(z) {return (substr(z,1,1)=="-"?-1:1)*(substr(z,2,2)*60+substr(z,4,2))} BEGIN {jan=mktime("2023 01 01 12 0 0"); jul=mktime("2023 07 01 12 0 0"); print "July minus January offset (minutes):",minutes(strftime("%z",jul))-minutes(strftime("%z",jan))}'
 # Output: July minus January offset (minutes): -30
+```
 
+```bash
 # Length of a local DST-transition day
 TZ=Europe/Berlin gawk 'BEGIN {print (mktime("2026 03 30 0 0 0")-mktime("2026 03 29 0 0 0"))/3600}'
 # Output: 23
+```
 
+```bash
 # Choose the two occurrences of a repeated local time explicitly
 TZ=Europe/Berlin gawk 'BEGIN {a=mktime("2026 10 25 2 30 0 1"); b=mktime("2026 10 25 2 30 0 0"); print strftime("%F %T %z",a); print strftime("%F %T %z",b); print b-a}'
 # Output: 02:30 at +0200 and +0100 on the same date, 3600 seconds apart
@@ -285,13 +374,19 @@ Subtracting `%z` values as decimal numbers and dividing by 100 fails for fractio
 ```bash
 # Coarse wall-clock timing (one-second resolution)
 time_start=$(gawk 'BEGIN {print systime()}'); sleep 2; gawk -v s="$time_start" 'BEGIN {print "Execution time:",systime()-s,"seconds"}'
+```
 
+```bash
 # Coarse benchmark: a fast run may report 0 seconds
 gawk 'BEGIN {start=systime(); for(i=0;i<1000000;i++) x=sqrt(i); print "Time taken:",systime()-start,"seconds"}'
+```
 
+```bash
 # Shell timing for a real AWK workload (reports to stderr)
 time gawk '{sum+=$1} END {print sum+0}' numbers.txt
+```
 
+```bash
 # GNU date alternative: obtain an epoch once before AWK starts
 gawk -v now="$(date +%s)" '$1>=now-60 && $1<=now' epoch.log
 ```

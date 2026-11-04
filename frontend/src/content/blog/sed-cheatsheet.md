@@ -25,7 +25,9 @@ Related: [AWK fundamentals](/blog/awk-cheatsheet), [advanced AWK](/blog/awk-chea
 printf 'old old\nkeep\n' | sed 's/old/new/'
 # new old
 # keep
+```
 
+```bash
 printf 'old old\nkeep\n' | sed -n 's/old/new/p'
 # new old
 ```
@@ -129,31 +131,49 @@ printf 'foo\nfoo\n' | sed '0,/foo/s/foo/bar/' # Change only first foo (GNU)
 ```bash
 # Replace first occurrence of 'old' with 'new' on each line
 sed 's/old/new/' file
+```
 
+```bash
 # Replace all occurrences of 'old' with 'new' on each line
 sed 's/old/new/g' file
+```
 
+```bash
 # Replace the 3rd occurrence of 'old' with 'new' on each line
 sed 's/old/new/3' file
+```
 
+```bash
 # Case-insensitive replacement
 sed 's/old/new/gi' file
+```
 
+```bash
 # Delete lines containing 'pattern'
 sed '/pattern/d' file
+```
 
+```bash
 # Delete blank lines
 sed '/^$/d' file
+```
 
+```bash
 # Delete leading whitespace (spaces, tabs)
 sed 's/^[[:blank:]]*//' file
+```
 
+```bash
 # Delete trailing whitespace
 sed 's/[[:blank:]]*$//' file
+```
 
+```bash
 # Remove comments (lines starting with #)
 sed '/^#/d' file
+```
 
+```bash
 # Delete both leading and trailing whitespace
 sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//' file
 ```
@@ -165,25 +185,39 @@ sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//' file
 ```bash
 # Print only lines 1 to 5
 sed -n '1,5p' file
+```
 
+```bash
 # Print line 52
 sed -n '52p' file
+```
 
+```bash
 # Print from line with 'start' to line with 'end'
 sed -n '/start/,/end/p' file
+```
 
+```bash
 # Print every 3rd line starting from line 1
 sed -n '1~3p' file
+```
 
+```bash
 # Insert text before line 3
 sed '3i\New text before line 3' file
+```
 
+```bash
 # Append text after line 3
 sed '3a\New text after line 3' file
+```
 
+```bash
 # Replace the content of line 3
 sed '3c\New content for line 3' file
+```
 
+```bash
 # Delete lines from 3 to 7
 sed '3,7d' file
 ```
@@ -195,10 +229,14 @@ The one-line `i\text`, `a\text`, and `c\text` forms above are GNU-friendly. For 
 ```bash
 # Multiple commands with -e
 sed -e 's/old/new/g' -e '/pattern/d' file
+```
 
+```bash
 # Multiple commands with semicolons
 sed 's/old/new/g; /pattern/d' file
+```
 
+```bash
 # Using a command script from a file
 sed -f commands.sed file
 ```
@@ -208,10 +246,14 @@ sed -f commands.sed file
 ```bash
 # Edit file in-place without backup
 sed -i 's/old/new/g' file
+```
 
+```bash
 # Edit file in-place with backup extension .bak
 sed -i.bak 's/old/new/g' file
+```
 
+```bash
 # Process multiple files
 sed 's/old/new/g' file1 file2 file3
 ```
@@ -247,22 +289,34 @@ sed 's/old/new/g' file1 file2 file3
 ```bash
 # Reverse the order of lines
 sed -n '1!G;h;$p' file
+```
 
+```bash
 # Duplicate each line
 sed 'p' file
+```
 
+```bash
 # Double-space a file
 sed 'G' file
+```
 
+```bash
 # Triple-space a file
 sed 'G;G' file
+```
 
+```bash
 # Print matching line AND the next line; consumed context is not re-tested
 sed -n '/pattern/{p;n;p}' file
+```
 
+```bash
 # Join pairs of lines
 sed '$!N;s/\n/ /' file
+```
 
+```bash
 # Add line numbers to a file
 sed = file | sed 'N;s/\n/\t/'
 ```
@@ -274,10 +328,14 @@ The guarded pair join preserves an odd final line. Reversing via hold space stor
 ```bash
 # Replace a pattern that spans multiple lines
 sed ':a;$!{N;ba};s/pattern\n[^\n]*another/replacement/g' file
+```
 
+```bash
 # Delete a block of text between two patterns
 sed '/start/,/end/d' file
+```
 
+```bash
 # Print paragraphs containing 'pattern'
 sed -n '/./{H;$!d;};x;/pattern/{s/^\n//;p;}' file
 ```
@@ -289,20 +347,30 @@ The whole-file loop guards `N` at EOF so a one-line input still reaches the repl
 ```bash
 # Using basic regular expressions
 sed 's/[0-9]\{3\}/number/g' file
+```
 
+```bash
 # Using extended regular expressions
 sed -E 's/[0-9]{3}/number/g' file
+```
 
+```bash
 # GNU word operators: replace words starting with pre
 sed -E 's/\bpre\w+/WORD/g' file
+```
 
+```bash
 # GNU word boundaries: replace whole words only
 sed -E 's/\bword\b/WORD/g' file
+```
 
+```bash
 # GNU NUL-delimited mode: with no NUL bytes, the entire file is one record
 # Dot can then match the embedded newlines (without M mode)
 sed -z 's/pattern.*/replacement/' file
+```
 
+```bash
 # Capture groups
 sed -E 's/(prefix)-(suffix)/\1_\2/' file
 ```
@@ -379,7 +447,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   sed -i 's/old/new/g' file     # Linux/GNU
 fi
+```
 
+```bash
 # Or use separate extension everywhere
 sed -i.bak 's/old/new/g' file
 ```
@@ -398,10 +468,14 @@ sed -i.bak 's/old/new/g' file
 ```bash
 # Show what sed is doing
 sed --debug 's/old/new/g' file  # GNU sed only
+```
 
+```bash
 # Print the pattern space at each step
 sed -n 'l' file
+```
 
+```bash
 # Inspect the literal script, and use Bash xtrace when diagnosing expansion
 printf '%s\n' 's/old/new/g'
 # Enable temporarily around the command being diagnosed: set -x; ...; set +x
@@ -414,16 +488,24 @@ The following newline and escape recipes use GNU sed. The CRLF conversion assume
 ```bash
 # Convert Windows/DOS newlines to Unix
 sed 's/\r$//' file
+```
 
+```bash
 # Convert Unix newlines to Windows/DOS
 sed 's/$/\r/' file
+```
 
+```bash
 # Extract trailing hash bars: each input line must end with at least one #
 sed -nE 's/^(.*[^#])?(#+)$/\2/p' file | sed 's/^/|/'
+```
 
+```bash
 # Remove ANSI SGR color/style sequences (GNU escapes; not every ANSI sequence)
 sed 's/\x1b\[[0-9;]*m//g' file
+```
 
+```bash
 # Caesar cipher (rotate by 13)
 sed 'y/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM/' file
 ```
@@ -433,19 +515,29 @@ sed 'y/abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ/nopqrstuvwxyzabcdefg
 ```bash
 # Insert line numbers
 sed = file | sed 'N;s/\n/\t/'
+```
 
+```bash
 # Double-space a file
 sed G file
+```
 
+```bash
 # Delete trailing whitespace
 sed 's/[[:blank:]]*$//' file
+```
 
+```bash
 # Insert 5 blank lines before line 23 (hold space is initially empty here)
 sed '23{x;p;p;p;p;p;x}' file
+```
 
+```bash
 # Reverse order of lines (GNU sed)
 sed '1!G;h;$!d' file
+```
 
+```bash
 # Center each line in 80 columns: Bash, printf, wc and sed
 # ASCII/byte-width text; long lines are preserved without padding
 while IFS= read -r line || [[ -n "$line" ]]; do
@@ -454,11 +546,15 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   (( padding > 0 )) || padding=0
   printf '%*s%s\n' "$padding" '' "$line"
 done < file | sed 's/[[:blank:]]*$//'
+```
 
+```bash
 # Find duplicate lines globally: sort + count + sed formatting
 # sed retains counts > 1; blank lines are valid data too
 LC_ALL=C sort file | uniq -c | sed -n '/^[[:blank:]]*1[[:blank:]]/!{s/^[[:blank:]]*//;p;}'
+```
 
+```bash
 ```
 
 ## Example sed Script (save as commands.sed)
@@ -578,10 +674,14 @@ after
 ```bash
 # Include delimiters
 sed -n '/^BEGIN$/,/^END$/p' report.txt
+```
 
+```bash
 # Exclude delimiters; output is alpha then beta
 sed -n '/^BEGIN$/,/^END$/{/^BEGIN$/d; /^END$/d; p;}' report.txt
+```
 
+```bash
 # Replace the whole block, including its markers (portable c syntax)
 sed '/^BEGIN$/,/^END$/c\
 REDACTED' report.txt
@@ -609,13 +709,17 @@ At the end of each cycle `h` remembers the current line. On a match, `x;p;x;p` p
 # Repeat until no adjacent commas remain; t branches only after a substitution
 printf 'a,,,,b,,c\n' | sed ':again; s/,,/,/g; t again'
 # a,b,c
+```
 
+```bash
 # If the key conversion succeeds, skip the fallback prefix
 printf 'name=alice\nunstructured\n' |
   sed -E 's/^name=(.*)$/user=\1/; t done; s/^/unparsed: /; :done'
 # user=alice
 # unparsed: unstructured
+```
 
+```bash
 # GNU T takes the failure branch; b jumps unconditionally
 printf 'id=42\nid=oops\n' |
   sed -E 's/^id=([0-9]+)$/ID:\1/; T unchanged; b done; :unchanged; s/^/INVALID: /; :done'
@@ -684,13 +788,19 @@ This handles simple inline links without nested brackets, parenthesized URLs, es
 ```bash
 # GNU sed: remove a UTF-8 BOM only at the beginning, CR at line end, and trailing blanks
 LC_ALL=C sed '1s/^\xEF\xBB\xBF//;s/\r$//;s/[[:blank:]]*$//' windows.txt
+```
 
+```bash
 # Idempotent CRLF output: strip one existing CR before appending one
 sed 's/\r$//;s/$/\r/' file > windows-output.txt
+```
 
+```bash
 # Replace each tab with four spaces (does not align actual tab stops)
 sed 's/\t/    /g' file
+```
 
+```bash
 # Collapse every run of empty lines to one; GNU sed EOF behavior
 sed '/^$/{N;/^\n$/D;}' file
 ```
@@ -723,12 +833,16 @@ printf 'alpha\nbeta\n' | sed -z 's/^/> /gM'
 # > alpha
 # > beta
 # >  (the final newline creates an empty line start; no final newline follows this marker)
+```
 
+```bash
 # Same idea without a trailing newline in the input
 printf 'alpha\nbeta' | sed -z 's/^/> /gM'
 # > alpha
 # > beta  (no final newline added)
+```
 
+```bash
 # A dot matches embedded newline by default, but not with M
 printf 'a\nb' | sed -z 's/a.b/X/'    # X
 printf 'a\nb' | sed -z 's/a.b/X/M'   # a then b, unchanged
@@ -776,7 +890,9 @@ sed '/^INCLUDE$/r fragment.txt' template.txt
 # first inserted line
 # second inserted line
 # footer
+```
 
+```bash
 # Read the fragment, then remove the marker from normal output
 sed -e '/^INCLUDE$/r fragment.txt' -e '/^INCLUDE$/d' template.txt
 # header
@@ -809,7 +925,9 @@ printf 'INFO ready\nERROR failed\nWARN retry\nERROR timeout\n' > app.log
 sed -n '/^ERROR/w errors.log' app.log
 # stdout: empty
 # errors.log contains the two ERROR lines
+```
 
+```bash
 # Match + duplicate to file while printing the complete normal stream
 sed '/^ERROR/w errors.log' app.log
 ```
@@ -841,11 +959,15 @@ printf 'a\nb\nc\nd\n' | sed -n -e 'N' -e 'W pair-heads.txt'
 ```bash
 printf 'a-b-c\n' | sed 'y/-/_/'
 # a_b_c
+```
 
+```bash
 # GNU: capitalize the first character of each whitespace-delimited word
 printf 'alice bob\n' | sed -E 's/(^|[[:blank:]])([[:alpha:]])/\1\u\2/g'
 # Alice Bob
+```
 
+```bash
 # z clears the selected buffer but still permits subsequent commands
 printf 'keep\nsecret\n' | sed '/secret/z'
 # keep, followed by a blank line
@@ -859,10 +981,14 @@ printf 'keep\nsecret\n' | sed '/secret/z'
 ```bash
 # Print lines 1-5 and stop reading
 sed '5q' file
+```
 
+```bash
 # GNU: quit before printing a STOP marker
 sed '/^STOP$/Q' file
+```
 
+```bash
 # GNU: status 0 for READY, custom status 7 for no match in nonempty input
 # Readability and empty-input checks are handled by Bash
 if [[ ! -r file ]]; then
@@ -888,11 +1014,15 @@ For simple presence checks, `grep -q` is usually clearer. This example demonstra
 ```bash
 # Fixed trusted command; e writes its output, -n suppresses the original line
 printf 'placeholder\n' | sed -n 'e date -u +%Y-%m-%d'
+```
 
+```bash
 # Only a fixed numeric fixture is turned into a fixed-format command
 printf '42\n' | sed -E 's/^[0-9]+$/printf "value=%s" &/e'
 # value=42
+```
 
+```bash
 # Refuse shell/file-I/O extensions when evaluating a transformation-only script
 sed --sandbox 's/old/new/g' file
 ```
@@ -922,7 +1052,9 @@ Single quotes protect a literal sed script from Bash. Double quotes are needed a
 ```bash
 # Preview: transformations are printed to stdout for matching .conf files
 find ./configs -type f -name '*.conf' -exec sed 's/old[.]example/new.example/g' {} +
+```
 
+```bash
 # GNU: edit each file in place with an attached backup suffix
 find ./configs -type f -name '*.conf' -exec sed -i.bak 's/old[.]example/new.example/g' {} +
 ```
@@ -937,10 +1069,14 @@ printf 'b1\nb2\n' > second.txt
 
 # Combined input stream: $ selects only b2
 sed -n '$p' first.txt second.txt
+```
 
+```bash
 # Separate files: $ selects a2 and b2
 sed -s -n '$p' first.txt second.txt
+```
 
+```bash
 # File name, per-file line number, and contents for each file's first line
 sed -s -n '1{F;=;p;}' first.txt second.txt
 # first.txt

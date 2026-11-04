@@ -17,18 +17,29 @@ Related: [grep fundamentals and Bash recipes](/blog/grep-cheatsheet), [sed editi
 
 ```bash
 rg --version
+```
+
+```bash
 rg -h              # Short option summary
 # rg --help        # Full explanations
+```
 
+```bash
 # Search the current directory recursively
 rg -n -F 'TODO' .
+```
 
+```bash
 # Search selected paths, rather than the whole working directory
 rg -n 'timeout' ./src ./config
+```
 
+```bash
 # Search one file
 rg -n 'ERROR' app.log
+```
 
+```bash
 # Filter standard input
 printf 'alpha\nbeta\nalphabet\n' | rg 'alpha'
 # alpha
@@ -57,7 +68,9 @@ error lowercase
 rg -n 'ERROR' app.log
 # 3:ERROR timeout user=bob code=504
 # 5:ERROR disk full user=alice code=507
+```
 
+```bash
 rg -i -n 'error' app.log
 # Also includes 7:error lowercase
 ```
@@ -124,15 +137,21 @@ Several short flags differ from grep. In rg, **`-r` is replacement, `-L` follows
 printf 'a.b\naXb\n' | rg -N 'a.b'
 # a.b
 # aXb
+```
 
+```bash
 printf 'a.b\naXb\n' | rg -NF 'a.b'
 # a.b
+```
 
+```bash
 # Quote shell data, use -F for literal content, and -e for a leading hyphen
 needle='user=alice'
 rg -nF -e "$needle" -- app.log
 # Lines 2, 4 and 5
+```
 
+```bash
 printf '%s\n' '-Ddebug' 'normal' | rg -NF -e '-Ddebug'
 # -Ddebug
 ```
@@ -145,13 +164,20 @@ printf '%s\n' '-Ddebug' 'normal' | rg -NF -e '-Ddebug'
 # Lowercase pattern: smart case searches case-insensitively
 printf 'error\nERROR\nError\n' | rg -NS 'error'
 # All three lines
+```
 
+```bash
 # Uppercase in the pattern makes smart case case-sensitive
 printf 'error\nERROR\nError\n' | rg -NS 'Error'
 # Error
+```
 
+```bash
 # Explicit overrides when case behavior must not depend on the pattern
 rg -ni 'ERROR' app.log
+```
+
+```bash
 rg -ns 'ERROR' app.log
 ```
 
@@ -163,7 +189,9 @@ Smart case is opt-in via `-S` unless enabled in configuration. It is based on th
 printf 'cat\nconcatenate\ncat_1\ncat-like\n' | rg -Nw 'cat'
 # cat
 # cat-like
+```
 
+```bash
 printf 'cat\ncat-like\n' | rg -NFx 'cat'
 # cat
 ```
@@ -195,14 +223,20 @@ The default engine supports ERE-like syntax plus Unicode features; there is no n
 printf 'req-17\nreq-001\nrequest-7\n' | rg -N '^req-[0-9]{2,3}$'
 # req-17
 # req-001
+```
 
+```bash
 printf 'code=504\ncode=oops\n' | rg -No 'code=[0-9]+'
 # code=504
+```
 
+```bash
 # Default regex digit class includes non-ASCII Unicode digits
 printf '123\n١٢٣\n' | rg -N '^\d+$'
 # Both lines
+```
 
+```bash
 printf '123\n١٢٣\n' | rg -N '^[0-9]+$'
 # 123
 ```
@@ -213,14 +247,20 @@ The default engine does not support lookaround or backreferences. Unlike GNU gre
 
 ```bash
 rg --pcre2-version
+```
 
+```bash
 # Extract values without user=
 rg -NoP '(?<=user=)[[:alnum:]_]+' app.log
 # alice, bob, alice, alice (one per line)
+```
 
+```bash
 printf 'cat cat\ncat dog\n' | rg -NP '^(\w+) \1$'
 # cat cat
+```
 
+```bash
 # Automatic engine choice uses PCRE2 when the pattern requires it
 printf 'prefixpattern7\n' | rg -No --engine auto '(?<=prefix)pattern(?=[0-9])'
 # pattern
@@ -233,17 +273,25 @@ PCRE2 is optional build functionality. Default-engine Unicode classes and PCRE2 
 ```bash
 # OR with regex alternatives
 rg -n 'ERROR|WARN' app.log
+```
 
+```bash
 # OR with two literal strings
 rg -nF -e 'ERROR' -e 'WARN' app.log
+```
 
+```bash
 # AND on one line in any order; suppress prefixes before the second search
 rg -NI -F 'ERROR' app.log | rg -NF 'user=alice'
 # ERROR disk full user=alice code=507
+```
 
+```bash
 # NOT: discard lines containing either literal term
 rg -NvF -e 'DEBUG' -e 'healthcheck' app.log
+```
 
+```bash
 # PCRE2 alternative for same-line AND while preserving rg's original prefixes
 rg -nP '^(?=.*ERROR)(?=.*user=alice).*$' app.log
 # 5:ERROR disk full user=alice code=507
@@ -291,15 +339,21 @@ printf 'build/\n' > demo/.gitignore
 # No Git metadata is needed for this fixture because of --no-require-git
 rg --no-require-git --sort path -nF 'TODO' demo
 # demo/src/app.txt:1:TODO source
+```
 
+```bash
 # Add hidden paths, while retaining ignore rules
 rg --no-require-git --hidden --sort path -nF 'TODO' demo
 # Also finds demo/.settings; build/output.txt is still excluded
+```
 
+```bash
 # Disable automatic ignore rules, but hidden paths are still excluded
 rg --no-ignore --sort path -nF 'TODO' demo
 # Finds build/output.txt and src/app.txt
+```
 
+```bash
 # Include both ignored and hidden paths; deliberately exclude Git metadata
 rg --hidden --no-ignore -g '!**/.git/**' --sort path -nF 'TODO' demo
 # Finds all three TODO lines
@@ -339,10 +393,14 @@ In this version, `-uuu` enables binary **search**, not unrestricted binary-text 
 ```bash
 # List the paths that discovery would consider
 rg --files --sort path ./project
+```
 
+```bash
 # Compare with a wider scope
 rg --files --hidden --no-ignore -g '!**/.git/**' --sort path ./project
+```
 
+```bash
 # Reasons for filtering and other decisions go to stderr
 rg --debug -nF 'needle' ./project > matches.txt 2> search-debug.log
 # --trace provides additional detail when --debug is insufficient
@@ -357,16 +415,24 @@ rg --debug -nF 'needle' ./project > matches.txt 2> search-debug.log
 ```bash
 # Quote globs so Bash does not expand them
 rg -nF 'TODO' ./project -g '*.java' -g '*.kt'
+```
 
+```bash
 # Brace alternatives are handled by rg, not Bash (quotes prevent expansion)
 rg -nF 'TODO' ./project -g '*.{js,ts,svelte}'
+```
 
+```bash
 # Exclude tests and generated output
 rg -nF 'TODO' ./project -g '!*.test.ts' -g '!**/build/**' -g '!**/vendor/**'
+```
 
+```bash
 # Search a specific subtree: passing the path is often clearest
 rg -nF 'TODO' ./project/src
+```
 
+```bash
 # Case-insensitive filename selection, independent of content case
 rg -nF 'TODO' ./project --iglob '*.md'
 ```
@@ -378,11 +444,21 @@ Positive globs select candidate paths; repeated positive file globs can include 
 ```bash
 # Inspect available names and their glob definitions
 rg --type-list | rg '^(java|kotlin|js):'
+```
 
+```bash
 rg -n -t java -F 'TODO' ./project
-rg -n -t java -t kotlin -F 'TODO' ./project
-rg -n -T markdown -F 'TODO' ./project
+```
 
+```bash
+rg -n -t java -t kotlin -F 'TODO' ./project
+```
+
+```bash
+rg -n -T markdown -F 'TODO' ./project
+```
+
+```bash
 # A custom type for this invocation only
 rg --type-add 'jvm:*.{java,kt,kts}' -t jvm -nF 'TODO' ./project
 ```
@@ -394,10 +470,14 @@ Type filters are filename/glob definitions, not language parsers. `-T` excludes 
 ```bash
 # Only direct children of project, not nested subdirectories
 rg --max-depth 1 -nF 'TODO' ./project
+```
 
+```bash
 # Skip large files; search statistics explain the work done
 rg --max-filesize 2M --stats -nF 'TODO' ./project
+```
 
+```bash
 # Follow encountered links when that scope is intentional
 rg -L -nF 'TODO' ./project
 ```
@@ -412,7 +492,9 @@ A root directory has depth 0. Size/depth limits deliberately omit content; do no
 rg --no-config --no-heading --color never -nH --sort path -F 'ERROR' app.log
 # app.log:3:ERROR timeout user=bob code=504
 # app.log:5:ERROR disk full user=alice code=507
+```
 
+```bash
 rg --no-heading --color never -nH --column 'ERROR' app.log
 # app.log:3:1:ERROR timeout user=bob code=504
 # app.log:5:1:ERROR disk full user=alice code=507
@@ -424,8 +506,13 @@ rg --no-heading --color never -nH --column 'ERROR' app.log
 
 ```bash
 rg -n -C 1 'ERROR' app.log
-rg -n -B 2 -A 3 'ERROR' app.log
+```
 
+```bash
+rg -n -B 2 -A 3 'ERROR' app.log
+```
+
+```bash
 seq 1 9 | rg -n -C 1 --context-separator='====' '^[26]$'
 # 1-1
 # 2:2
@@ -448,7 +535,9 @@ rg --count-matches 'ERROR' counts.log
 # 3
 rg -o 'ERROR' counts.log
 # ERROR, ERROR, ERROR (one per line)
+```
 
+```bash
 # Include zero counts explicitly; this still exits 1 if no match exists
 rg -c --include-zero 'MISSING' counts.log
 # 0
@@ -460,8 +549,13 @@ By default, rg omits a file with zero matches from count output. `-c` counts mat
 
 ```bash
 rg -l -F 'ERROR' ./logs
-rg --files-without-match -F 'ERROR' ./logs
+```
 
+```bash
+rg --files-without-match -F 'ERROR' ./logs
+```
+
+```bash
 # Keep filenames containing whitespace/newlines intact
 while IFS= read -r -d '' path; do
   printf 'matched file: %q\n' "$path"
@@ -481,14 +575,18 @@ printf 'BEGIN\nalpha\nbeta\nEND\n' > block.txt
 rg -UNo 'BEGIN\nalpha' block.txt
 # BEGIN
 # alpha
+```
 
+```bash
 # -U alone does not make dot include newline
 rg -UNo --multiline-dotall 'BEGIN.*?END' block.txt
 # BEGIN
 # alpha
 # beta
 # END
+```
 
+```bash
 # Inline dotall expresses the same intent
 rg -UNo '(?s)BEGIN.*?END' block.txt
 ```
@@ -501,7 +599,9 @@ rg -UNo '(?s)BEGIN.*?END' block.txt
 printf 'ERROR\r\n' > windows.log
 rg --crlf -n '^ERROR$' windows.log
 # Matches despite the CRLF terminator
+```
 
+```bash
 # Explicit decoding for a known legacy encoding
 rg --encoding windows-1252 -n 'café' legacy.txt
 ```
@@ -514,7 +614,9 @@ The encoding name describes the **input** file. rg's automatic encoding mode rec
 # NUL-separated input/output records; --null-data implies text mode
 printf 'alpha\0beta\0' | rg --null-data -NF 'beta' | od -An -tx1
 # 62 65 74 61 00
+```
 
+```bash
 # Candidate filenames with a NUL separator, not newline
 rg --files -0 ./project > candidate-files.nul
 ```
@@ -529,16 +631,22 @@ rg --files -0 ./project > candidate-files.nul
 printf 'user=alice code=504\n' |
   rg -N 'user=(\w+)' -r 'account=$1'
 # account=alice code=504
+```
 
+```bash
 # Named group; -o prints just the transformed matched part
 printf 'user=alice code=504\n' |
   rg -No 'user=(?P<name>\w+)' -r '${name}'
 # alice
+```
 
+```bash
 # Braces separate the group name from immediately following digits/text
 printf 'PORT=3000\n' | rg -N '^(PORT=)[0-9]+$' -r '${1}8080'
 # PORT=8080
+```
 
+```bash
 # $$ represents a literal dollar in the replacement syntax
 printf 'amount=42\n' | rg -N 'amount=([0-9]+)' -r '$$${1}'
 # $42
@@ -571,11 +679,18 @@ Without `--passthru`, nonmatching lines would be omitted. Even with passthrough,
 
 ```bash
 rg -nF 'DATABASE_URL' ./project --hidden -g '!**/.git/**'
-rg -n '(^|[[:space:]])timeout[[:space:]]*=' ./project -g '*.conf'
+```
 
+```bash
+rg -n '(^|[[:space:]])timeout[[:space:]]*=' ./project -g '*.conf'
+```
+
+```bash
 # A deliberately simple function-declaration shape, not a language parser
 rg -n '^\s*(export\s+)?(async\s+)?function\s+\w+' ./project -g '*.{js,ts}'
+```
 
+```bash
 # Include just one otherwise ignored file by naming it explicitly
 rg -nF 'timeout' ./project/build/generated.conf
 ```
@@ -586,7 +701,9 @@ Hidden configuration files may still be ignored by rules even with `--hidden`. R
 
 ```bash
 rg --no-heading --color never -nH 'TODO|FIXME|HACK' ./project -g '!**/vendor/**'
+```
 
+```bash
 # Extract user values, then count/sort with standard console tools
 rg -No 'user=(\w+)' -r '$1' app.log |
   LC_ALL=C sort | uniq -c | sort -nr
@@ -600,7 +717,9 @@ The pipeline extracts the captured value, not the `user=` key. `sort` changes or
 ```bash
 # Runs until interrupted; tail starts at newly appended records
 tail -n 0 -F app.log | rg --line-buffered 'ERROR|WARN'
+```
 
+```bash
 # Every intermediate filter must flush promptly too
 tail -n 0 -F app.log |
   rg --line-buffered -F 'ERROR' |
@@ -616,7 +735,9 @@ Line buffering controls rg's output, not whether the producing application flush
 printf 'INFO ready\nERROR archived\n' | gzip > archive.log.gz
 rg -z -nF 'ERROR' archive.log.gz
 # 2:ERROR archived
+```
 
+```bash
 # Or explicitly decompress into stdin
 gzip -cd -- archive.log.gz | rg -nF 'ERROR'
 # 2:ERROR archived
@@ -631,7 +752,9 @@ printf 'header\0ERROR payload\n' > payload.bin
 
 # Treat as text deliberately; inspect bytes rather than render binary control data
 rg -a -NF 'ERROR' payload.bin | od -An -tx1
+```
 
+```bash
 # Byte offset of an extracted match
 printf 'xx ERROR\n' | rg -Nob 'ERROR'
 # 3:ERROR
@@ -745,7 +868,9 @@ Save as `ripgreprc`:
 # Use this config for one command; no home-directory file is required
 RIPGREP_CONFIG_PATH=./ripgreprc rg -n 'error' app.log
 # Finds lowercase, uppercase and mixed-case error text
+```
 
+```bash
 # Ignore the environment-specified config and state the needed case behavior
 RIPGREP_CONFIG_PATH=./ripgreprc rg --no-config -ns 'ERROR' app.log
 # Only the uppercase ERROR lines
@@ -757,7 +882,13 @@ rg reads the path from `RIPGREP_CONFIG_PATH`; it does not automatically discover
 
 ```bash
 rg --no-config --stats -nF 'TODO' ./project
+```
+
+```bash
 rg --no-config -j 1 -nF 'TODO' ./project
+```
+
+```bash
 rg --no-config --sort path -nF 'TODO' ./project
 ```
 

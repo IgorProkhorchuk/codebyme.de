@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { afterNavigate } from '$app/navigation';
   import '../app.css';
-  import 'prism-themes/themes/prism-one-dark.css';
+  import 'prism-themes/themes/prism-one-light.css';
 
   let menuOpen = false;
   afterNavigate(() => {

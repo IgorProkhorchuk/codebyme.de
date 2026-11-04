@@ -104,13 +104,19 @@ Distrobox represents a middle ground between full system virtualization and trad
 ```bash
 # Via curl (recommended)
 curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh
+```
 
+```bash
 # Via wget
 wget -qO- https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh
+```
 
+```bash
 # Install to custom location
 curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/install | sh -s -- --prefix ~/.local
+```
 
+```bash
 # Uninstall
 curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/uninstall | sh
 ```
@@ -122,7 +128,9 @@ curl -s https://raw.githubusercontent.com/89luca89/distrobox/main/uninstall | sh
 sudo dnf install podman         # Fedora/RHEL
 sudo apt install podman         # Ubuntu/Debian
 sudo pacman -S podman          # Arch
+```
 
+```bash
 # Or Docker
 sudo apt install docker.io      # Ubuntu/Debian
 sudo dnf install docker         # Fedora
@@ -135,22 +143,34 @@ sudo dnf install docker         # Fedora
 ```bash
 # Basic container creation
 distrobox create --name mybox --image ubuntu:22.04
+```
 
+```bash
 # With custom home directory
 distrobox create --name devbox --image fedora:38 --home ~/devbox
+```
 
+```bash
 # With additional volumes
 distrobox create --name workbox --image archlinux --volume /mnt/data:/data
+```
 
+```bash
 # With specific user
 distrobox create --name testbox --image debian:12 --user myuser
+```
 
+```bash
 # With init system
 distrobox create --name systembox --image ubuntu:22.04 --init
+```
 
+```bash
 # With pre/post init hooks
 distrobox create --name hookbox --image fedora:38 --pre-init-hooks "dnf update -y"
+```
 
+```bash
 # Clone existing container
 distrobox create --name newbox --clone oldbox
 ```
@@ -162,29 +182,41 @@ distrobox create --name newbox --clone oldbox
 --image ubuntu:22.04
 --image ubuntu:20.04
 --image ubuntu:latest
+```
 
+```bash
 # Fedora variants
 --image fedora:38
 --image fedora:39
 --image fedora:rawhide
+```
 
+```bash
 # Arch Linux
 --image archlinux:latest
 --image archlinux/archlinux:base-devel
+```
 
+```bash
 # Debian
 --image debian:12
 --image debian:bullseye
 --image debian:bookworm
+```
 
+```bash
 # openSUSE
 --image opensuse/tumbleweed
 --image opensuse/leap:15.5
+```
 
+```bash
 # CentOS/RHEL-like
 --image quay.io/centos/centos:stream9
 --image registry.access.redhat.com/ubi8/ubi
+```
 
+```bash
 # Alpine
 --image alpine:latest
 --image alpine:3.18
@@ -195,25 +227,39 @@ distrobox create --name newbox --clone oldbox
 ```bash
 # List containers
 distrobox list
+```
 
+```bash
 # Enter container
 distrobox enter mybox
+```
 
+```bash
 # Enter as different user
 distrobox enter mybox --user root
+```
 
+```bash
 # Execute single command
 distrobox enter mybox -- ls -la
+```
 
+```bash
 # Stop container
 distrobox stop mybox
+```
 
+```bash
 # Start stopped container
 distrobox start mybox
+```
 
+```bash
 # Remove container
 distrobox rm mybox
+```
 
+```bash
 # Remove with force
 distrobox rm mybox --force
 ```
@@ -225,22 +271,34 @@ distrobox rm mybox --force
 ```bash
 # Export GUI application
 distrobox-export --app firefox
+```
 
+```bash
 # Export with custom name
 distrobox-export --app firefox --extra-flags "--name CustomFirefox"
+```
 
+```bash
 # Export command-line tool
 distrobox-export --bin htop
+```
 
+```bash
 # Export with custom path
 distrobox-export --bin nvim --export-path ~/.local/bin
+```
 
+```bash
 # Export service/daemon
 distrobox-export --service nginx
+```
 
+```bash
 # List exported apps
 distrobox-export --list
+```
 
+```bash
 # Delete exported app
 distrobox-export --app firefox --delete
 ```
@@ -250,10 +308,14 @@ distrobox-export --app firefox --delete
 ```bash
 # Export with desktop entry
 distrobox-export --app code --extra-flags "--desktop"
+```
 
+```bash
 # Export with custom icon
 distrobox-export --app myapp --icon /path/to/icon.png
+```
 
+```bash
 # Export with sudo wrapper
 distrobox-export --bin some-tool --sudo
 ```
@@ -299,7 +361,9 @@ fi
 distrobox create --name devbox --image ubuntu:22.04 \
   --volume /mnt/projects:/projects:Z \
   --volume /mnt/data:/data:ro
+```
 
+```bash
 # Mount with SELinux context
 --volume /host/path:/container/path:Z    # Private unshared label
 --volume /host/path:/container/path:z    # Shared label
@@ -310,10 +374,14 @@ distrobox create --name devbox --image ubuntu:22.04 \
 ```bash
 # Use host networking (default)
 distrobox create --name netbox --image fedora:38 --net host
+```
 
+```bash
 # Custom network
 distrobox create --name isolated --image alpine --net none
+```
 
+```bash
 # Port forwarding
 distrobox create --name webapp --image ubuntu:22.04 --volume /dev:/dev:rslave --additional-flags "-p 8080:8080"
 ```
@@ -324,7 +392,9 @@ distrobox create --name webapp --image ubuntu:22.04 --volume /dev:/dev:rslave --
 # Pass environment variables
 distrobox create --name envbox --image fedora:38 \
   --additional-flags "-e EDITOR=vim -e BROWSER=firefox"
+```
 
+```bash
 # From file
 --additional-flags "--env-file /path/to/env.list"
 ```
@@ -335,7 +405,9 @@ distrobox create --name envbox --image fedora:38 \
 # Pre-init hooks (run as root)
 distrobox create --name initbox --image ubuntu:22.04 \
   --pre-init-hooks "apt update && apt install -y build-essential"
+```
 
+```bash
 # Post-init hooks (run as user)
 --init-hooks "pip install --user requests pandas"
 ```
@@ -347,18 +419,26 @@ distrobox create --name initbox --image ubuntu:22.04 \
 ```bash
 # Ubuntu/Debian containers
 sudo apt update && sudo apt install package-name
+```
 
+```bash
 # Fedora containers
 sudo dnf install package-name
+```
 
+```bash
 # Arch containers
 sudo pacman -S package-name
 # Enable AUR (if using base-devel image)
 git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+```
 
+```bash
 # Alpine containers
 sudo apk add package-name
+```
 
+```bash
 # openSUSE containers
 sudo zypper install package-name
 ```
@@ -371,15 +451,21 @@ sudo zypper install package-name
 # Node.js development
 distrobox create --name nodejs --image node:18 \
   --volume ~/projects:/projects
+```
 
+```bash
 # Python development
 distrobox create --name python --image python:3.11 \
   --init-hooks "pip install --user poetry black flake8"
+```
 
+```bash
 # Go development
 distrobox create --name golang --image golang:1.21 \
   --volume ~/go:/go
+```
 
+```bash
 # Rust development
 distrobox create --name rust --image rust:latest \
   --init-hooks "rustup component add clippy rustfmt"
@@ -392,7 +478,9 @@ distrobox create --name rust --image rust:latest \
 for distro in ubuntu:22.04 fedora:38 archlinux debian:12; do
     distrobox create --name "test-${distro%%:*}" --image "$distro"
 done
+```
 
+```bash
 # Test script across distributions
 for container in test-ubuntu test-fedora test-arch test-debian; do
     distrobox enter "$container" -- ./test-script.sh
@@ -407,18 +495,26 @@ done
 # Check container status
 distrobox list
 podman ps -a
+```
 
+```bash
 # View container logs
 podman logs distrobox-mybox
+```
 
+```bash
 # Reset container
 distrobox stop mybox
 distrobox rm mybox
 distrobox create --name mybox --image ubuntu:22.04
+```
 
+```bash
 # Fix permissions
 distrobox enter mybox -- sudo chown -R $USER:$USER /home/$USER
+```
 
+```bash
 # Update container image
 podman pull ubuntu:22.04
 distrobox create --name mybox-new --image ubuntu:22.04
@@ -430,7 +526,9 @@ distrobox create --name mybox-new --image ubuntu:22.04
 ```bash
 # Enable verbose output
 DBX_VERBOSE=1 distrobox create --name debug --image fedora:38
+```
 
+```bash
 # Container inspection
 distrobox enter mybox -- cat /etc/os-release
 distrobox enter mybox -- id
@@ -445,7 +543,9 @@ distrobox enter mybox -- mount | grep home
 # Use descriptive names
 distrobox create --name web-dev-ubuntu --image ubuntu:22.04
 distrobox create --name data-science-fedora --image fedora:38
+```
 
+```bash
 # Group related containers
 distrobox create --name proj-frontend --image node:18
 distrobox create --name proj-backend --image python:3.11
@@ -458,10 +558,14 @@ distrobox create --name proj-database --image postgres:15
 # Use local images when possible
 podman pull ubuntu:22.04
 distrobox create --name fast --image localhost/ubuntu:22.04
+```
 
+```bash
 # Minimize container size
 distrobox create --name minimal --image alpine:latest
+```
 
+```bash
 # Share package cache
 distrobox create --name cached --image fedora:38 \
   --volume ~/.cache/dnf:/var/cache/dnf
@@ -492,12 +596,16 @@ alias dbe='distrobox enter'
 alias dbl='distrobox list'
 alias dbr='distrobox rm'
 alias dbs='distrobox stop'
+```
 
+```bash
 # Quick container entry
 alias ubuntu='distrobox enter ubuntu'
 alias fedora='distrobox enter fedora'
 alias arch='distrobox enter arch'
+```
 
+```bash
 # Container with specific commands
 function dbexec() {
     distrobox enter "$1" -- "${@:2}"
@@ -533,7 +641,9 @@ distrobox enter devbox -- code /projects/myproject
 
 # Export VS Code for seamless use
 distrobox-export --app code
+```
 
+```bash
 # Vim/Neovim with plugins
 distrobox create --name vim --image archlinux \
   --init-hooks "pacman -S neovim git"

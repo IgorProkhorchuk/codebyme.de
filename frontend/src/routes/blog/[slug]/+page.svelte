@@ -142,8 +142,8 @@
 	.markdown-content :global(a) { color: var(--accent, #4a90e2); text-decoration: underline; }
 	
 	.markdown-content :global(pre) { 
-		background: #1e1e1e; 
-		color: #d4d4d4; 
+		background: #f1f3f5;
+		color: #383a42;
 		padding: 1.2rem; 
 		border-radius: 8px; 
 		overflow-x: auto; 
@@ -156,9 +156,9 @@
 		position: absolute;
 		top: 8px;
 		right: 8px;
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(0, 0, 0, 0.05);
 		border: none;
-		color: #a3a3a3;
+		color: #59636e;
 		padding: 6px;
 		border-radius: 4px;
 		cursor: pointer;
@@ -172,8 +172,8 @@
 		opacity: 1;
 	}
 	.markdown-content :global(.copy-btn:hover) {
-		background: rgba(255, 255, 255, 0.2);
-		color: white;
+		background: rgba(0, 0, 0, 0.1);
+		color: #212529;
 	}
 	.markdown-content :global(.copy-btn.copied) {
 		opacity: 1;
@@ -182,6 +182,13 @@
 	.markdown-content :global(code) { 
 		font-family: 'Fira Code', 'Consolas', monospace; 
 		font-size: 0.9rem;
+	}
+	.markdown-content :global(pre > code) {
+		background: transparent;
+		color: inherit;
+	}
+	.markdown-content :global(pre .token.comment) {
+		color: #66717e;
 	}
 	.markdown-content :global(p > code) {
 		background: #f4f4f5;

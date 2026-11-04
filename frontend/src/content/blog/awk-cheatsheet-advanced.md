@@ -16,10 +16,14 @@ Time references: [functions, UTC, time zones and DST](/blog/awk-timeFunctions-ch
 ```bash
 # Assign variables
 awk 'BEGIN {count=0} {count++} END {print count}' file.txt
+```
 
+```bash
 # Pre-set variables via command line
 awk -v name="John" '{print name, $1}' file.txt
+```
 
+```bash
 # Multiple variables
 awk -v var1="hello" -v var2="world" 'BEGIN {print var1, var2}'
 ```
@@ -47,7 +51,9 @@ gawk '{
     # Access later with:
     # print data["key1"]["key2"]
 }'
+```
 
+```bash
 # Array sorting (GNU AWK)
 gawk '
 {
@@ -58,7 +64,9 @@ END {
     for (word in count)
         print word, count[word]
 }' file.txt
+```
 
+```bash
 # Array functions
 awk '
 BEGIN {
@@ -82,13 +90,19 @@ awk '{
     else
         print > "low_values.txt"
 }' data.txt
+```
 
+```bash
 # Append to files
 awk '{print >> "output.txt"}' data.txt
+```
 
+```bash
 # Execute a fixed shell command once; inspect its status
 awk 'BEGIN {status = system("date -u"); if (status != 0) exit 1}'
+```
 
+```bash
 # For printing input data, use AWK directly
 awk '{print $1}' file.txt
 ```
@@ -100,7 +114,9 @@ awk '{print $1}' file.txt
 ```bash
 # Pipe output to another command
 awk '{print $1 | "sort"} END {close("sort")}' file.txt
+```
 
+```bash
 # Read command output
 awk '
 BEGIN {
@@ -120,7 +136,9 @@ gawk 'match($0, /([0-9]+)-([0-9]+)/, arr) {
     print "First number:", arr[1]
     print "Second number:", arr[2]
 }' file.txt
+```
 
+```bash
 # Case-insensitive matching
 awk 'tolower($0) ~ /pattern/' file.txt
 ```
@@ -152,7 +170,9 @@ gawk 'BEGIN {
     current_time = systime()  # Unix timestamp
     print strftime("%Y-%m-%d %H:%M:%S", current_time)
 }'
+```
 
+```bash
 # Parse timestamps
 gawk '
 BEGIN {
@@ -189,10 +209,14 @@ GNU AWK must be built with socket support. This is plain TCP/HTTP, without TLS. 
 ```bash
 # Select an installed locale before starting the process
 LC_ALL=fr_FR.UTF-8 gawk 'BEGIN {print strftime("%A, %B %d, %Y")}'
+```
 
+```bash
 # Inspect available locale names
 locale -a
+```
 
+```bash
 # gettext-style translation lookup (requires a matching message catalog)
 gawk 'BEGIN {TEXTDOMAIN="myapp"; print dcgettext("Hello", TEXTDOMAIN)}'
 ```
@@ -206,12 +230,19 @@ Changing `ENVIRON["LC_ALL"]` after startup does not reinitialize AWK's locale. `
 gawk 'BEGIN {start=systime()}
      {total += $1}
      END {print "Total:", total + 0; print "Took", systime()-start, "seconds"}' numbers.txt
+```
 
+```bash
 # Debug print statements
 awk '{print "DEBUG: processing line " NR " with " NF " fields" > "/dev/stderr"; print $1}' file.txt
+```
 
+```bash
 # GNU AWK execution counts and interactive debugger
 gawk --profile=awkprof.out -f script.awk file.txt
+```
+
+```bash
 gawk --debug -f script.awk file.txt
 ```
 
@@ -220,13 +251,19 @@ gawk --debug -f script.awk file.txt
 ```bash
 # Generate formatted output with printf
 awk '{printf "%-15s %8.2f %10s\n", $1, $2, $3}' file.txt
+```
 
+```bash
 # NUL-separated records (GNU AWK; e.g. filenames from find)
 find . -type f -print0 | gawk 'BEGIN {RS=ORS="\0"} /[.]log$/ {print}'
+```
 
+```bash
 # Fixed-width fields within each newline-separated record (GNU AWK)
 gawk 'BEGIN {FIELDWIDTHS="5 10 15"} {print $1, $2, $3}' fixed.txt
+```
 
+```bash
 # Fixed-length records: consume groups of 8 characters (GNU AWK, C locale)
 LC_ALL=C gawk 'BEGIN {RS=".{8}"} {if (RT != "") print RT} END {if ($0 != "") print $0}' records.bin
 ```
@@ -345,7 +382,9 @@ Appending survives closing and reopening a stream. This bounds open files but pr
 ```bash
 # sub() modifies a copy of the complete record, preserving unrelated spacing
 awk '{line=$0; sub(/pending/, "done", line); print line}' tasks.txt
+```
 
+```bash
 # GNU AWK gensub() returns a string without changing its input
 gawk '{print gensub(/([0-9]+)-([0-9]+)/, "\\2/\\1", "g", $0)}' codes.txt
 ```
