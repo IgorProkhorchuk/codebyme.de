@@ -1,6 +1,6 @@
 ---
 lang: uk
-title: 'JVM Tools Cheatsheet: javap, jimage та інструменти моніторингу'
+title: 'JVM Tools Cheatsheet. javap, jimage та інструменти моніторингу'
 date: '2026-08-14'
 category: 'TECH'
 tags: ['java', 'jvm', 'javatools']
@@ -16,6 +16,9 @@ tags: ['java', 'jvm', 'javatools']
 
 ```bash
 javap [опції] ім'я.класу
+```
+
+```bash
 javap [опції] шлях/до/файлу.class
 ```
 
@@ -38,7 +41,13 @@ javap [опції] шлях/до/файлу.class
 
 ```bash
 javap -c -p com.example.MyClass          # весь байт-код, включно з private
+```
+
+```bash
 javap -v com.example.MyClass             # повна інформація + constant pool
+```
+
+```bash
 javap -l -p target/classes/com/example/MyClass.class
 ```
 
@@ -69,8 +78,17 @@ jimage <підкоманда> [опції] шлях/до/образу
 
 ```bash
 jimage list $JAVA_HOME/lib/modules | less
+```
+
+```bash
 jimage list --include "java.base/*" $JAVA_HOME/lib/modules
+```
+
+```bash
 jimage extract --dir out $JAVA_HOME/lib/modules
+```
+
+```bash
 jimage verify $JAVA_HOME/lib/modules
 ```
 
@@ -116,6 +134,9 @@ jstat -<опція> [-t] [-h<рядків>] <pid> [interval_ms [count]]
 
 ```bash
 jstat -gcutil 12345 1000 10     # кожну секунду, 10 разів
+```
+
+```bash
 jstat -gccause 12345 2000       # кожні 2с, безкінечно
 ```
 
@@ -137,6 +158,9 @@ jstack [опції] <pid>
 
 ```bash
 jstack -l 12345 > threaddump.txt
+```
+
+```bash
 jstack -l 12345 | grep -A5 "BLOCKED"   # шукати дедлоки
 ```
 
@@ -157,6 +181,9 @@ jmap [опції] <pid>
 
 ```bash
 jmap -histo:live 12345 | head -30
+```
+
+```bash
 jmap -dump:live,format=b,file=heap.hprof 12345
 ```
 
@@ -170,6 +197,9 @@ jmap -dump:live,format=b,file=heap.hprof 12345
 
 ```bash
 jcmd <pid|main-class> <команда> [аргументи]
+```
+
+```bash
 jcmd -l                          # список усіх запущених JVM
 ```
 
@@ -188,8 +218,17 @@ jcmd -l                          # список усіх запущених JVM
 
 ```bash
 jcmd 12345 help
+```
+
+```bash
 jcmd 12345 Thread.print
+```
+
+```bash
 jcmd 12345 GC.heap_dump filename=heap.hprof
+```
+
+```bash
 jcmd 12345 VM.flags
 ```
 
@@ -210,6 +249,9 @@ jinfo [опції] <pid>
 
 ```bash
 jinfo -flags 12345
+```
+
+```bash
 jinfo -flag MaxHeapSize 12345
 ```
 
@@ -221,6 +263,9 @@ jinfo -flag MaxHeapSize 12345
 
 ```bash
 jconsole [pid|host:port]
+```
+
+```bash
 jvisualvm    # у новіших JDK окремий download (Visual VM), не входить у комплект
 ```
 
@@ -230,6 +275,9 @@ jvisualvm    # у новіших JDK окремий download (Visual VM), не �
 
 ```bash
 jhsdb <режим> --pid <pid>
+```
+
+```bash
 jhsdb <режим> --core <core-file> --exe <java-binary>
 ```
 
@@ -242,6 +290,9 @@ jhsdb <режим> --core <core-file> --exe <java-binary>
 
 ```bash
 jhsdb jstack --pid 12345
+```
+
+```bash
 jhsdb jmap --pid 12345 --heap
 ```
 

@@ -1,6 +1,6 @@
 ---
 lang: uk
-title: "NAT у Linux: від трансляції адрес до iptables і nftables"
+title: "NAT у Linux. Трансляція адрес, iptables та nftables"
 description: "Навіщо виник NAT, як працюють SNAT, DNAT, masquerading і conntrack. Практичні приклади iptables та nftables, hairpin NAT, CGNAT і трансляція в IPv6."
 date: "2026-10-18"
 category: "TECH"

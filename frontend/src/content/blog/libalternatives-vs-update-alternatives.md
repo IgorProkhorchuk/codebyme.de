@@ -1,6 +1,6 @@
 ---
 lang: uk
-title: '`libalternatives` в openSUSE: майбутнє управління альтернативами'
+title: '`libalternatives` в openSUSE'
 date: '2026-07-04'
 category: 'TECH'
 tags: ['linux', 'opensuse', 'btrfs', 'alternatives']
@@ -196,26 +196,40 @@ tags: ['linux', 'opensuse', 'btrfs', 'alternatives']
 ```bash
 # Перегляд усіх зареєстрованих програм
 alts -l
+```
 
+```bash
 # Перегляд усіх альтернатив для java
 alts -l java
+```
 
+```bash
 # Перегляд поточної альтернативи для java
 alts -t java
+```
 
+```bash
 # Встановлення для поточного користувача (вибираємо пріоритет 3000)
 alts -u -n java -p 3000
+```
 
+```bash
 # Встановлення системного default (потрібен sudo)
 sudo alts -s -n java -p 3105
+```
 
+```bash
 # Скидання до системного default (видаляє користувацьке перевизначення)
 alts -u -n java
+```
 
+```bash
 # Перевірка, яка версія java насправді запускається
 alts -t java
 java -version
+```
 
+```bash
 # Перегляд конфігураційних файлів для java
 ls -la /usr/share/libalternatives/java/
 cat /usr/share/libalternatives/java/3000.conf

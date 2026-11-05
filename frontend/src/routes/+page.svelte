@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Seo from '$lib/components/Seo.svelte';
-	export let data: any;
-
+	import type { PageData } from './$types';
+	export let data: PageData;
 	let searchQuery = '';
 
 	function handleSearch(e: Event) {
 		e.preventDefault();
-		if (searchQuery.trim()) {
-			goto(`/blog?q=${encodeURIComponent(searchQuery.trim())}`);
-		}
+		if (searchQuery.trim()) goto(`/blog?q=${encodeURIComponent(searchQuery.trim())}`);
 	}
 </script>
 
@@ -17,201 +15,87 @@
 
 <section class="hero">
 	<h1>Build. Deploy. <span class="highlight">Document.</span></h1>
-	
 	<form class="search-form" action="/blog" method="GET" on:submit={handleSearch}>
-		<input 
-			type="search" 
-			name="q"
-			aria-label="Search article titles and full text"
-			placeholder="Search articles..." 
-			bind:value={searchQuery}
-			class="search-input"
-		/>
-		<button type="submit" class="search-btn">Search</button>
+		<input type="search" name="q" aria-label="Search article titles and full text" placeholder="Search articles..." maxlength="200" bind:value={searchQuery} />
+		<button type="submit">Search</button>
 	</form>
 </section>
 
-<section class="explore-topics">
-	<h2>Popular Topics</h2>
-	<div class="tag-cloud">
-		{#each data.tags as tag}
-			<a href="/blog?tag={tag}" class="tag-pill">#{tag}</a>
+<section class="topics-section" aria-labelledby="topics-heading">
+	<h2 id="topics-heading">Explore topics</h2>
+	<div class="topics-grid">
+		{#each data.topics as topic}
+			<a class="topic-card" href="/blog?topic={topic.slug}">
+				<h3>{topic.title}</h3>
+				<p>{topic.description}</p>
+				<div class="topic-footer"><span>{topic.count} {topic.count === 1 ? 'article' : 'articles'}</span><span aria-hidden="true">→</span></div>
+			</a>
 		{/each}
 	</div>
 </section>
 
-<section class="recent-posts-section">
-	<h2>Recent Posts</h2>
+<section class="cheatsheets-section" aria-labelledby="cheatsheets-heading">
+	<h2 id="cheatsheets-heading">Cheatsheets</h2>
+	<div class="cheatsheet-links">
+		{#each data.cheatsheets as sheet}
+			<a href="/blog/{sheet.slug}">{sheet.title} <span aria-hidden="true">↗</span></a>
+		{/each}
+	</div>
+</section>
+
+<section class="recent-posts-section" aria-labelledby="latest-heading">
+	<div class="section-heading">
+		<h2 id="latest-heading">Latest articles</h2>
+		<a href="/blog">View all articles <span aria-hidden="true">→</span></a>
+	</div>
 	<div class="posts-list">
 		{#each data.recentPosts as post}
 			<a href="/blog/{post.slug}" class="post-row">
-				<div class="post-row-left">
-					<time>{post.date}</time>
-					<span class="reading-time">⏱ {post.readingTime}</span>
-					<h3>{post.title}</h3>
-				</div>
-				<div class="post-row-right">
-					{#if post.tags}
-						{#each post.tags.slice(0, 3) as tag}
-							<span class="small-tag">#{tag}</span>
-						{/each}
-					{/if}
-				</div>
+				<div class="post-summary"><h3>{post.title}</h3><p>{post.description}</p></div>
+				<div class="post-meta"><time datetime={post.date}>{post.date}</time><span>{post.readingTime}</span></div>
 			</a>
 		{/each}
 	</div>
 </section>
 
 <style>
-	/* Hero Section */
-	.hero {
-		text-align: center;
-		margin-bottom: 4rem;
-	}
-	h1 {
-		font-size: 3rem;
-		color: var(--primary);
-		margin-bottom: 2rem;
-		letter-spacing: -1px;
-	}
-	.highlight {
-		color: var(--accent);
-	}
-
-	.search-form {
-		display: flex;
-		gap: 0.5rem;
-		max-width: 500px;
-		margin: 0 auto;
-	}
-
-	.search-input {
-		flex: 1;
-		padding: 0.75rem 1rem;
-		border: 1px solid var(--border-color, #eaeaea);
-		border-radius: 8px;
-		font-size: 1rem;
-		outline: none;
-		transition: border-color 0.2s;
-	}
-
-	.search-input:focus {
-		border-color: var(--accent, #4a90e2);
-	}
-
-	.search-btn {
-		background: var(--accent, #4a90e2);
-		color: white;
-		border: none;
-		padding: 0 1.5rem;
-		border-radius: 8px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: background 0.2s;
-	}
-
-	.search-btn:hover {
-		filter: brightness(1.1);
-	}
-
-	/* Explore Topics */
-	.explore-topics {
-		margin-bottom: 4rem;
-	}
-	h2 {
-		font-size: 1.5rem;
-		color: var(--primary);
-		margin-bottom: 1.5rem;
-		font-weight: 700;
-	}
-	.tag-cloud {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 1rem;
-	}
-	.tag-pill {
-		background: var(--card-bg, #ffffff);
-		border: 1px solid var(--border-color, #eaeaea);
-		padding: 0.6rem 1.2rem;
-		border-radius: 50px;
-		color: #4b5563;
-		text-decoration: none;
-		font-weight: 600;
-		font-size: 0.95rem;
-		transition: all 0.3s ease;
-		box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-	}
-	.tag-pill:hover {
-		color: var(--accent, #4a90e2);
-		border-color: var(--accent, #4a90e2);
-		box-shadow: 0 0 10px rgba(74, 144, 226, 0.4); /* Neon glow effect */
-		transform: translateY(-2px);
-	}
-
-	/* Recent Posts */
-	.recent-posts-section {
-		margin-bottom: 4rem;
-	}
-	.posts-list {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-	.post-row {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 1.5rem;
-		background: var(--card-bg, #ffffff);
-		border: 1px solid var(--border-color, #eaeaea);
-		border-radius: 12px;
-		text-decoration: none;
-		color: inherit;
-		transition: all 0.2s ease;
-	}
-	.post-row:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 16px rgba(0,0,0,0.06);
-		border-color: #d1d5db;
-	}
-	.post-row-left {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-	.post-row-left time {
-		font-size: 0.9rem;
-		color: #666;
-		white-space: nowrap;
-	}
-	.reading-time {
-		font-size: 0.85rem;
-		color: #888;
-		white-space: nowrap;
-	}
-	.post-row-left h3 {
-		margin: 0;
-		font-size: 1.2rem;
-		font-weight: 600;
-		color: #1a1a1a;
-	}
-	.post-row-right {
-		display: flex;
-		gap: 0.5rem;
-	}
-	.small-tag {
-		font-size: 0.75rem;
-		color: #6b7280;
-		background: #f3f4f6;
-		padding: 0.2rem 0.6rem;
-		border-radius: 12px;
-	}
-
-	@media (max-width: 640px) {
-		.post-row {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
-		}
+	.hero { text-align: center; margin-bottom: 3rem; }
+	h1 { font-size: clamp(2rem, 5vw, 3rem); color: var(--primary); margin-bottom: 1.25rem; letter-spacing: -1px; }
+	.highlight { color: var(--accent); }
+	.search-form { display: flex; gap: 0.5rem; max-width: 500px; margin: 0 auto; }
+	.search-form input { flex: 1; min-width: 0; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; font: inherit; background: white; }
+	.search-form button { background: var(--accent); color: white; border: none; padding: 0 1.25rem; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+	.search-form button:hover { filter: brightness(0.95); }
+	a:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+	h2 { font-size: 1.5rem; color: var(--primary); margin-bottom: 1.25rem; font-weight: 700; }
+	h3 { font-size: 1.1rem; font-weight: 600; color: var(--primary); }
+	.topics-section, .cheatsheets-section { margin-bottom: 3rem; }
+	.topics-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+	.topic-card { display: flex; flex-direction: column; padding: 1.3rem; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; transition: border-color 0.2s, box-shadow 0.2s; }
+	.topic-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+	.topic-card p { margin: 0.4rem 0 1.2rem; color: #66717e; font-size: 0.9rem; }
+	.topic-footer { display: flex; justify-content: space-between; gap: 1rem; margin-top: auto; color: #66717e; font-size: 0.85rem; }
+	.topic-footer > :last-child { color: var(--accent); }
+	.cheatsheet-links { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+	.cheatsheet-links a { display: inline-flex; align-items: center; gap: 1rem; padding: 0.6rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); font-weight: 600; font-size: 0.95rem; }
+	.cheatsheet-links a:hover { border-color: var(--accent); color: var(--accent); }
+	.cheatsheet-links span { color: #66717e; }
+	.section-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 1rem; margin-bottom: 1.25rem; }
+	.section-heading h2 { margin: 0; }
+	.section-heading a { font-size: 0.9rem; color: var(--primary); font-weight: 600; }
+	.section-heading a:hover { color: var(--accent); }
+	.posts-list { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; }
+	.post-row { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.25rem 1.5rem; }
+	.post-row + .post-row { border-top: 1px solid var(--border-color); }
+	.post-row:hover { background: #f1f3f5; }
+	.post-row:focus-visible { outline-offset: -4px; }
+	.post-summary { min-width: 0; }
+	.post-summary p { font-size: 0.9rem; color: #66717e; margin-top: 0.35rem; overflow-wrap: anywhere; }
+	.post-meta { display: flex; flex-direction: column; gap: 0.3rem; flex-shrink: 0; text-align: right; color: #66717e; font-size: 0.8rem; }
+	@media (max-width: 800px) { .topics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+	@media (max-width: 500px) {
+		.topics-grid { grid-template-columns: 1fr; }
+		.post-row { flex-direction: column; align-items: flex-start; gap: 0.75rem; padding: 1.1rem; }
+		.post-meta { flex-direction: row; gap: 1rem; text-align: left; }
 	}
 </style>

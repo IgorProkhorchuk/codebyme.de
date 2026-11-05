@@ -18,4 +18,13 @@ describe('article index', () => {
 		expect(posts.every(post => post.description && ['en', 'uk', 'de'].includes(post.lang) && !Number.isNaN(Date.parse(post.date)))).toBe(true);
 		expect(findPosts('', null, null)).toHaveLength(posts.length);
 	});
+	it('browses curated topics and keeps search and tag filters within the topic', () => {
+		const networking = findPosts('', null, null, 'networking');
+		expect(networking.map(post => post.slug)).toEqual(expect.arrayContaining(['nat-linux-iptables-nftables', 'ipv4-subnetting-guide']));
+		expect(networking.some(post => post.slug === 'bash_scripting')).toBe(false);
+		expect(findPosts('masquerade', null, null, 'networking').map(post => post.slug)).toContain('nat-linux-iptables-nftables');
+		expect(findPosts('masquerade', null, null, 'git')).toEqual([]);
+		expect(findPosts('', null, 'java', 'networking')).toEqual([]);
+		expect(findPosts('', null, null, 'unknown-topic')).toEqual([]);
+	});
 });
