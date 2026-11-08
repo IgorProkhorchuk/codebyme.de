@@ -1,6 +1,10 @@
-# Creating a Snap Package on Ubuntu and Linux
-
-Nov 5, 2026 · @Igor
+---
+lang: en
+title: 'Creating a Snap Package on Ubuntu and Linux'
+date: '2026-06-10'
+category: 'TECH'
+tags: ['snap', 'snapcraft', 'packaging', 'ubuntu', 'linux', 'loop', 'lsblk']
+---
 
 ## What is a snap?
 
