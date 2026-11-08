@@ -233,7 +233,9 @@ cgroupfs is a **pseudo-filesystem** — it exists only in kernel memory. Nothing
 ```bash
 # v2
 mount -t cgroup2 none /sys/fs/cgroup
+```
 
+```bash
 # v1 (example: memory controller)
 mount -t cgroup -o memory cgroup /sys/fs/cgroup/memory
 ```
@@ -329,7 +331,9 @@ cpu.pressure     (PSI: pressure stall information)
 ```bash
 # Limit to 1.5 CPUs in v2
 echo "150000 100000" > /sys/fs/cgroup/myapp/cpu.max
+```
 
+```bash
 # Set relative weight
 echo 200 > /sys/fs/cgroup/myapp/cpu.weight
 ```
@@ -1003,7 +1007,9 @@ Trace cgroup events with BPF:
 ```bash
 # Trace all OOM kills, show which cgroup
 bpftrace -e 'tracepoint:oom:mark_victim { printf("OOM kill: pid=%d comm=%s\n", args->pid, args->comm); }'
+```
 
+```bash
 # Trace cgroup migrations
 bpftrace -e 'kprobe:cgroup_migrate { printf("migrate: pid=%d\n", ((struct task_struct*)arg1)->pid); }'
 ```
@@ -1013,7 +1019,9 @@ bpftrace -e 'kprobe:cgroup_migrate { printf("migrate: pid=%d\n", ((struct task_s
 ```bash
 # v1
 cgget -g memory:/
+```
 
+```bash
 # systemd properties
 systemctl show nginx.service | grep -E '^(Memory|CPU|Tasks|IO)'
 ```

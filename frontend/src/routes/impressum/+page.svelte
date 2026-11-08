@@ -1,35 +1,24 @@
-<svelte:head>
-  <title>Impressum | CodeByMe</title>
-</svelte:head>
+<script lang="ts">
+  import Seo from '$lib/components/Seo.svelte';
+</script>
 
-<div class="legal-content">
+<Seo title="Impressum | CodeByMe" description="Anbieterkennzeichnung und Kontakt für CodeByMe.de." path="/impressum" />
+
+<div class="legal-content" lang="de" data-page-lang>
   <h1>Impressum</h1>
 
-  <h2>Angaben gemäß § 5 TMG</h2>
-  <p>
-    Ihor Prokhorchuk<br />
-    Großgörschenstraße 8<br />
-    12163 Berlin<br />
-    Deutschland
-  </p>
+  <h2>Anbieterkennzeichnung</h2>
+  <p>Angaben nach § 18 Abs. 1 Medienstaatsvertrag (MStV) sowie, soweit anwendbar, § 5 Digitale-Dienste-Gesetz (DDG).</p>
+  <p>Ihor Prokhorchuk<br />Großgörschenstraße 8<br />12163 Berlin<br />Deutschland</p>
 
   <h2>Kontakt</h2>
-  <p>
-    E-Mail: igor@codebyme.de
-  </p>
+  <p>E-Mail: <a href="mailto:igor@codebyme.de">igor@codebyme.de</a></p>
 
-  <h2>Redaktionell verantwortlich</h2>
-  <p>
-    Ihor Prokhorchuk<br />
-    Großgörschenstraße 8<br />
-    12163 Berlin
-  </p>
+  <h2>Verantwortlich für den redaktionellen Inhalt</h2>
+  <p>Verantwortlich im Sinne von § 18 Abs. 2 MStV:<br />Ihor Prokhorchuk<br />Großgörschenstraße 8<br />12163 Berlin<br />Deutschland</p>
 
-  <h2>EU-Streitschlichtung</h2>
-  <p>Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>.<br /> Unsere E-Mail-Adresse finden Sie oben im Impressum.</p>
-
-  <h2>Verbraucher­streit­beilegung/Universal­schlichtungs­stelle</h2>
-  <p>Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+  <h2>Datenschutz</h2>
+  <p>Informationen zur Verarbeitung personenbezogener Daten und zur Kommentarfunktion finden Sie in der <a href="/datenschutz">Datenschutzerklärung</a>.</p>
 </div>
 
 <style>

@@ -1,6 +1,6 @@
 ---
 lang: en
-title: 'Prometheus: how to set it up over a cup of coffee'
+title: 'Prometheus. Set it up over a cup of coffee'
 date: '2025-06-05'
 category: 'TECH'
 tags: ['devops', 'prometheus', 'monitoring']

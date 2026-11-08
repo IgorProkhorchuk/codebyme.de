@@ -208,10 +208,14 @@ In this walkthrough we manage three Java distributions side-by-side:
 ```bash
 # OpenJDK 21
 sudo apt install openjdk-21-jdk
+```
 
+```bash
 # OpenJDK 25 (if available in your repos or via PPA)
 sudo apt install openjdk-25-jdk
+```
 
+```bash
 # GraalVM CE 25 — typically installed manually or via SDKMAN
 # Manual tarball approach:
 sudo mkdir -p /usr/lib/jvm
@@ -224,10 +228,14 @@ sudo mv /usr/lib/jvm/graalvm-community-openjdk-25* /usr/lib/jvm/graalvm-ce-java2
 ```bash
 # OpenJDK 21
 sudo zypper install java-21-openjdk java-21-openjdk-devel
+```
 
+```bash
 # OpenJDK 25
 sudo zypper install java-25-openjdk java-25-openjdk-devel
+```
 
+```bash
 # GraalVM — manual tarball (same as above)
 sudo tar -xzf graalvm-community-jdk-25_linux-x64.tar.gz -C /usr/lib/jvm/
 ```
@@ -425,7 +433,9 @@ When you add slaves, you must **remove** the existing registration first, then r
 sudo update-alternatives --remove java /usr/lib/jvm/java-25-openjdk-amd64/bin/java
 sudo update-alternatives --remove java /usr/lib/jvm/java-21-openjdk-amd64/bin/java
 sudo update-alternatives --remove java /usr/lib/jvm/graalvm-ce-java25/bin/java
+```
 
+```bash
 # Or remove-all and start fresh
 sudo update-alternatives --remove-all java
 sudo update-alternatives --remove-all javac
@@ -446,7 +456,9 @@ sudo update-alternatives --install /usr/bin/java java $JDK21/bin/java 2100 \
   --slave /usr/bin/jpackage    jpackage    $JDK21/bin/jpackage    \
   --slave /usr/share/man/man1/java.1.gz java.1.gz \
           $JDK21/man/man1/java.1.gz
+```
 
+```bash
 # --- OpenJDK 25 ---
 JDK25=/usr/lib/jvm/java-25-openjdk-amd64
 sudo update-alternatives --install /usr/bin/java java $JDK25/bin/java 2500 \
@@ -458,7 +470,9 @@ sudo update-alternatives --install /usr/bin/java java $JDK25/bin/java 2500 \
   --slave /usr/bin/jpackage    jpackage    $JDK25/bin/jpackage    \
   --slave /usr/share/man/man1/java.1.gz java.1.gz \
           $JDK25/man/man1/java.1.gz
+```
 
+```bash
 # --- GraalVM CE 25 ---
 GRAAL=/usr/lib/jvm/graalvm-ce-java25
 sudo update-alternatives --install /usr/bin/java java $GRAAL/bin/java 2490 \

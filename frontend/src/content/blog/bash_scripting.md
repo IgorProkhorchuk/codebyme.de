@@ -126,7 +126,9 @@ file="my report.txt"
 rm $file            # WRONG: runs rm my report.txt (two args)
 rm "$file"          # right
 rm -- "$file"       # best: -- stops a leading dash being read as an option
+```
 
+```bash
 cmd "$@"            # forward every argument intact
 cmd "${arr[@]}"     # forward every array element intact
 ```
@@ -368,17 +370,25 @@ mapfile -d '' -t names < <(find . -print0)  # NUL-delimited: safe for any filena
 # Join with a separator
 join_by() { local IFS="$1"; shift; echo "$*"; }
 join_by , "${fruits[@]}"
+```
 
+```bash
 # Copy an array
 copy=("${fruits[@]}")
+```
 
+```bash
 # Test membership
 contains() { local x; for x in "${@:2}"; do [[ "$x" == "$1" ]] && return 0; done; return 1; }
 contains banana "${fruits[@]}" && echo yes
+```
 
+```bash
 # Sort an array
 IFS=$'\n' sorted=($(sort <<< "${fruits[*]}"))   # fine for simple values
+```
 
+```bash
 # Remove duplicates while keeping order
 mapfile -t uniq < <(printf '%s\n' "${fruits[@]}" | awk '!seen[$0]++')
 ```
@@ -388,7 +398,9 @@ mapfile -t uniq < <(printf '%s\n' "${fruits[@]}" | awk '!seen[$0]++')
 ```bash
 print_all() { local item; for item in "$@"; do echo "- $item"; done; }
 print_all "${fruits[@]}"                # pass elements as separate arguments
+```
 
+```bash
 fill() { local -n out=$1; out=(a b c); } # pass by name using a nameref
 fill result; echo "${result[@]}"
 ```
@@ -485,7 +497,9 @@ elif other_command; then
 else
     ...
 fi
+```
 
+```bash
 if grep -q error log.txt; then echo "found"; fi     # test a command directly
 ```
 
@@ -600,13 +614,17 @@ Bash has four loop forms. Use `for` to walk a known list, `while` to repeat unti
 
 ```bash
 for name in alice bob carol; do echo "hi $name"; done
+```
 
+```bash
 for f in *.txt; do echo "$f"; done           # glob: quotes not needed on the pattern itself
 for i in {1..5}; do echo "$i"; done           # brace range
 for i in $(seq 1 "$n"); do echo "$i"; done    # when the end is a variable (braces cannot expand variables)
 for arg in "$@"; do echo "$arg"; done         # every argument
 for arg; do echo "$arg"; done                 # shorthand: iterates over "$@"
+```
 
+```bash
 for (( i = 0; i < 10; i++ )); do echo "$i"; done   # C-style
 for (( ;; )); do break; done                        # infinite loop
 ```
@@ -618,11 +636,15 @@ If a glob matches nothing, the loop runs once with the literal pattern (`*.txt`)
 ```bash
 i=0
 while (( i < 5 )); do echo "$i"; (( ++i )); done
+```
 
+```bash
 until ping -c1 -W1 example.com &>/dev/null; do
     echo "waiting for network..."; sleep 2
 done
+```
 
+```bash
 while true; do ...; done       # infinite; leave with break
 while :; do ...; done          # same, ':' is a no-op that returns 0
 ```
@@ -633,7 +655,9 @@ while :; do ...; done          # same, ':' is a no-op that returns 0
 while IFS= read -r line; do
     echo "line: $line"
 done < input.txt
+```
 
+```bash
 # Handle a last line that has no trailing newline:
 while IFS= read -r line || [[ -n $line ]]; do
     echo "$line"
@@ -648,7 +672,9 @@ The two guards matter: `IFS=` keeps leading and trailing whitespace, and `-r` st
 while IFS=: read -r user _ uid gid _ home shell; do
     echo "$user uid=$uid home=$home"
 done < /etc/passwd
+```
 
+```bash
 while IFS=',' read -r id name email; do
     echo "$name <$email>"
 done < <(tail -n +2 users.csv)          # skip the header line
@@ -660,7 +686,9 @@ Simple `read` splitting does not understand quoted CSV fields. For real CSV use 
 
 ```bash
 while IFS= read -r f; do echo "$f"; done < <(find . -type f -name '*.log')
+```
 
+```bash
 # Filenames with newlines? Use NUL separators:
 while IFS= read -r -d '' f; do echo "$f"; done < <(find . -type f -print0)
 ```
@@ -699,10 +727,14 @@ done
 ```bash
 # Repeat a command N times
 for _ in {1..3}; do curl -fsS "$url" && break; sleep 1; done
+```
 
+```bash
 # Process files in parallel batches (see section 16 for more)
 for f in *.png; do convert "$f" "${f%.png}.jpg" & done; wait
+```
 
+```bash
 # Count lines matching a pattern without a pipe
 count=0; while IFS= read -r l; do [[ $l == *ERROR* ]] && (( ++count )); done < log.txt
 ```
@@ -727,10 +759,14 @@ msg=$(greet Ann)       # capture the output
 ```bash
 is_even() { (( $1 % 2 == 0 )); }     # status of the last command is the function's status
 if is_even 4; then echo "even"; fi
+```
 
+```bash
 add() { echo $(( $1 + $2 )); }       # data goes to stdout
 sum=$(add 2 3)                       # sum=5
+```
 
+```bash
 die() { echo "error: $*" >&2; exit 1; }   # write to stderr, then stop the script
 [[ -f $cfg ]] || die "missing config: $cfg"
 ```
@@ -743,10 +779,14 @@ die() { echo "error: $*" >&2; exit 1; }   # write to stderr, then stop the scrip
 # 1. Nameref (bash 4.3+): the caller picks the variable name
 split_host() { local -n _h=$2 _p=$3; _h="${1%:*}"; _p="${1#*:}"; }
 split_host example.com:8080 host port
+```
 
+```bash
 # 2. Print in a parseable way and read it back
 read -r host port < <(parse_url "$url")
+```
 
+```bash
 # 3. Set a global variable on purpose (document it with a comment)
 REPLY_RESULT=...
 ```
@@ -843,15 +883,21 @@ echo x | sudo tee /etc/f >/dev/null   # usual fix for the line above
 cat <<EOF
 Hello $USER, today is $(date +%F)
 EOF
+```
 
+```bash
 cat <<'EOF'            # quoted delimiter: no expansion at all
 Price: $5, path: $HOME
 EOF
+```
 
+```bash
 cat <<-EOF             # <<- strips leading TABS (not spaces), for indented scripts
 	indented body
 	EOF
+```
 
+```bash
 cat > config.ini <<EOF   # write a file from a script
 [main]
 user=$USER
@@ -866,7 +912,9 @@ read -r -s -p "Password: " pw; echo      # silent (no echo), then a newline
 read -r -t 5 -n 1 -p "Continue? [y/N] " ans   # 5s timeout, one character
 read -r -a words <<< "a b c"            # into an array
 read -r -d '' blob < file                # read the whole file (delimiter = NUL)
+```
 
+```bash
 # Default answer pattern
 read -r -p "Proceed? [y/N] " ans
 [[ ${ans,,} == y* ]] || exit 1
@@ -878,11 +926,15 @@ read -r -p "Proceed? [y/N] " ans
 exec 3> out.log           # open fd 3 for writing
 echo "to log" >&3
 exec 3>&-                 # close it
+```
 
+```bash
 exec 4< input.txt         # open fd 4 for reading
 read -r line <&4
 exec 4<&-
+```
 
+```bash
 exec > >(tee -a run.log) 2>&1   # send ALL of the script's output to the screen and a log
 exec 2> errors.log              # redirect stderr for the rest of the script
 ```
@@ -921,7 +973,9 @@ A subshell is a child copy of the current shell. It sees all your variables but 
 today=$(date +%F)                 # modern form, nestable
 files=$(ls "$dir" | wc -l)
 old=`date`                        # backticks: legacy, do not nest well, avoid
+```
 
+```bash
 name=$(basename "$(dirname "$path")")      # nesting works cleanly with $( )
 content=$(< file.txt)                        # read a file with no extra process
 ```
@@ -958,11 +1012,15 @@ tee >(gzip > out.gz) >(sha256sum > out.sha) < input > /dev/null   # fan out to s
 count=0
 printf 'a\nb\nc\n' | while read -r l; do (( count++ )); done
 echo "$count"        # prints 0! the loop ran in a subshell
+```
 
+```bash
 count=0
 while read -r l; do (( count++ )); done < <(printf 'a\nb\nc\n')
 echo "$count"        # prints 3: process substitution keeps the loop in this shell
+```
 
+```bash
 # Alternative: shopt -s lastpipe   (bash 4.2+, only works when job control is off, as in scripts)
 ```
 
@@ -1153,7 +1211,9 @@ Variables: `NR` (record number), `NF` (field count), `FS`/`OFS` (input/output se
 cut -d, -f1,3 file.csv            # fields 1 and 3, comma-delimited
 cut -c1-10 file                   # first 10 characters
 cut -d: -f1 /etc/passwd           # list user names
+```
 
+```bash
 sort file                         # lexicographic
 sort -n file                      # numeric
 sort -nr file                     # numeric, reversed
@@ -1161,16 +1221,22 @@ sort -k2,2 -t, file               # sort by 2nd comma-separated field
 sort -u file                      # sort and remove duplicates
 sort -h file                      # human sizes (1K, 2M, 3G)
 sort -V file                      # version order (1.2 before 1.10)
+```
 
+```bash
 uniq file                         # remove ADJACENT duplicates (sort first)
 sort file | uniq -c | sort -nr    # frequency table, most common first
 sort file | uniq -d               # show only duplicated lines
+```
 
+```bash
 tr 'a-z' 'A-Z' < file             # translate characters
 tr -d '\r' < dos.txt > unix.txt   # delete characters
 tr -s ' ' < file                  # squeeze repeated spaces
 tr -cd '[:alnum:]\n' < file       # keep only letters, digits, newlines
+```
 
+```bash
 wc -l file                        # lines (-w words, -c bytes, -m chars)
 head -n 5 file                    # first 5 lines (head -n -2: all but last 2)
 tail -n 5 file                    # last 5 lines (tail -n +2: from line 2 onward)
@@ -1318,9 +1384,13 @@ if ! cp "$src" "$dst"; then
     echo "copy failed" >&2
     exit 1
 fi
+```
 
+```bash
 cp "$src" "$dst" || { echo "copy failed" >&2; exit 1; }
+```
 
+```bash
 mkdir -p "$dir" || exit                 # bare 'exit' reuses the failing status
 grep -q pattern file || true            # tolerate a non-match under set -e
 ```
@@ -1379,10 +1449,14 @@ bash -n script.sh            # parse only, find syntax errors
 bash -x script.sh            # trace every command as it runs
 bash -v script.sh            # echo each line as it is read
 set -x; ...; set +x          # trace only a section
+```
 
+```bash
 export PS4='+ ${BASH_SOURCE##*/}:${LINENO}:${FUNCNAME[0]:-main}: '   # richer trace prefix
 BASH_XTRACEFD=5; exec 5> trace.log      # send the trace to a file instead of stderr
+```
 
+```bash
 declare -p var arr           # dump exact variable contents, including hidden characters
 printf '%q\n' "$var"         # show a value with all special characters escaped
 cat -A file                  # show tabs (^I), line endings ($), and control characters
@@ -1450,7 +1524,9 @@ nohup cmd > out.log 2>&1 &   # keep running after the terminal closes
 ```bash
 # 1. xargs: simplest
 printf '%s\n' "${urls[@]}" | xargs -P 4 -n 1 curl -fsSO
+```
 
+```bash
 # 2. Pure bash: at most N jobs at once
 max=4
 for item in "${items[@]}"; do
@@ -1458,7 +1534,9 @@ for item in "${items[@]}"; do
     process "$item" &
 done
 wait
+```
 
+```bash
 # 3. GNU parallel, if installed
 parallel -j4 gzip ::: *.log
 ```
@@ -1499,7 +1577,9 @@ curl --max-time 10 "$url"            # tool-specific timeout
 exec 9> /var/lock/myscript.lock
 flock -n 9 || { echo "already running" >&2; exit 1; }
 # ... critical section; the lock is released when the script exits
+```
 
+```bash
 # or wrap a single command
 flock -n /var/lock/job.lock ./job.sh
 ```
@@ -1536,7 +1616,9 @@ tmpfile=$(mktemp)                       # unique temp file, mode 600
 tmpdir=$(mktemp -d)                     # unique temp directory
 tmpfile=$(mktemp "${TMPDIR:-/tmp}/myapp.XXXXXX")   # custom template
 trap 'rm -rf "$tmpdir"' EXIT            # always clean up
+```
 
+```bash
 mkdir -p "$dir"                         # create, no error if present, creates parents
 rm -rf -- "${dir:?}/"*                  # ${dir:?} aborts if dir is empty, so you never run rm -rf /*
 cp -a src/ dst/                         # archive copy: preserves permissions, times, symlinks
@@ -1600,7 +1682,9 @@ date -d @1700000000               # timestamp to date (GNU)
 date -d 'yesterday' +%F           # relative dates (GNU)
 date -d '2026-10-14 +30 days' +%F
 printf '%(%F %T)T\n' -1           # current time with no external process (bash 4.2+)
+```
 
+```bash
 start=$(date +%s); ...; echo "took $(( $(date +%s) - start ))s"
 ```
 
