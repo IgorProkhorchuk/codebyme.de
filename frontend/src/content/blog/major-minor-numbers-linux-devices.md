@@ -1,5 +1,5 @@
 ---
-lang: en
+lang: uk
 title: 'як ядро Linux знаходить потрібний пристрій'
 date: '2026-11-08'
 category: 'TECH'
