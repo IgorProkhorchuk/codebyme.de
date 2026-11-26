@@ -15,7 +15,10 @@ describe('article index', () => {
 	});
 	it('includes every article once and supplies valid SEO metadata', () => {
 		expect(new Set(posts.map(post => post.slug)).size).toBe(posts.length);
-		expect(posts.every(post => post.description && ['en', 'uk', 'de'].includes(post.lang) && !Number.isNaN(Date.parse(post.date)))).toBe(true);
+		const invalidPosts = posts.filter(post =>
+			!post.description || !['en', 'uk', 'de'].includes(post.lang) || Number.isNaN(Date.parse(post.date))
+		);
+		expect(invalidPosts.map(({ slug, description, lang, date }) => ({ slug, description, lang, date }))).toEqual([]);
 		expect(findPosts('', null, null)).toHaveLength(posts.length);
 	});
 	it('browses curated topics and keeps search and tag filters within the topic', () => {
